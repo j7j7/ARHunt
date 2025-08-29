@@ -50,7 +50,7 @@
     // overlaySrc (URL or asset selector like #triangleTex)
     if (c.overlaySrc) {
       // Use URL for flexibility; for asset id, ensure it starts with '#'
-      plane.setAttribute('material', `src: ${c.overlaySrc}; transparent: true;`);
+      plane.setAttribute('material', `src: url(${c.overlaySrc}); transparent: true; side: double;`);
     }
   }
 

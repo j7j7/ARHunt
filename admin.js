@@ -46,7 +46,7 @@
     plane.setAttribute('position', `${x} ${y} ${z}`);
     const [rx,ry,rz] = c.rotation;
     plane.setAttribute('rotation', `${rx} ${ry} ${rz}`);
-    plane.setAttribute('material', `src: ${c.overlaySrc}; transparent: true;`);
+    plane.setAttribute('material', `src: url(${c.overlaySrc}); transparent: true; side: double;`);
   }
 
   function loadConfigIntoUI(id) {
