@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ARHunt Admin (Natural Targets)</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <style>
+    #captureWrap { position: relative; display: grid; gap: 8px; }
+    video { width: 100%; max-height: 40vh; background: #000; }
+    canvas { display: none; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: center; }
+    .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    label { font-size: 14px; color: var(--muted); }
+    input, select { padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: rgba(15,23,42,0.6); color: var(--text); }
+  </style>
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar/dist/mindar-image-aframe.prod.js"></script>
+</head>
+<body>
+  <div class="overlay" style="justify-content:start;align-items:start;">
+    <div class="panel" style="margin:10px;width:min(96vw,820px);text-align:left;">
+      <h2>ARHunt Admin — Natural Image Targets</h2>
+      <p>Capture a photo of a real object (e.g., a picture frame), download it, then compile to a MindAR <code>.mind</code> file and load it here for preview and mapping.</p>
+
+      <section id="capture">
+        <h3>1) Capture Target Photo</h3>
+        <div id="captureWrap">
+          <video id="capVideo" playsinline muted></video>
+          <div class="row">
+            <button id="startCam" class="btn ghost">Start Camera</button>
+            <button id="snap" class="btn primary">Capture</button>
+            <a id="downloadCap" class="btn primary" download="capture.png" style="display:none;">Download Snapshot</a>
+          </div>
+          <canvas id="capCanvas" width="1280" height="720"></canvas>
+          <p style="font-size:13px;color:var(--muted);">Tip: fill the frame with the target, avoid glare, capture straight-on if possible. You can crop the image later before compiling.</p>
+        </div>
+      </section>
+
+      <section id="compile">
+        <h3>2) Compile to .mind</h3>
+        <p>Use MindAR CLI or Studio to compile captured images into a single <code>targets.mind</code> file, then place it at <code>assets/targets/compiled/targets.mind</code>. Docs: <a href="https://hiukim.github.io/mind-ar-js-doc/" target="_blank" rel="noopener">MindAR Docs</a>.</p>
+      </section>
+
+      <section id="preview">
+        <h3>3) Preview & Map Overlays</h3>
+        <div class="row">
+          <label>Load .mind file (optional override)</label>
+          <input id="mindFile" type="file" accept="application/octet-stream,.mind" />
+        </div>
+        <div class="grid" style="margin-top:8px;">
+          <label>Target Index</label>
+          <select id="targetIndex">
+            <option>0</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+            <option>6</option>
+            <option>7</option>
+            <option>8</option>
+            <option>9</option>
+          </select>
+
+          <label>Overlay</label>
+          <select id="overlaySelect">
+            <option value="assets/overlays/samples/sample-01.svg">sample-01</option>
+            <option value="assets/overlays/samples/sample-02.svg">sample-02</option>
+            <option value="assets/overlays/samples/sample-03.svg">sample-03</option>
+            <option value="assets/overlays/samples/sample-04.svg">sample-04</option>
+            <option value="assets/overlays/samples/sample-05.svg">sample-05</option>
+            <option value="assets/overlays/samples/sample-06.svg">sample-06</option>
+            <option value="assets/overlays/samples/sample-07.svg">sample-07</option>
+            <option value="assets/overlays/samples/sample-08.svg">sample-08</option>
+            <option value="assets/overlays/samples/sample-09.svg">sample-09</option>
+            <option value="assets/overlays/samples/sample-10.svg">sample-10</option>
+          </select>
+
+          <label>Width</label>
+          <input id="width" type="number" step="0.05" value="1" />
+          <label>Height</label>
+          <input id="height" type="number" step="0.05" value="0.56" />
+
+          <label>Pos X</label>
+          <input id="posX" type="number" step="0.01" value="0" />
+          <label>Pos Y</label>
+          <input id="posY" type="number" step="0.01" value="0" />
+          <label>Pos Z</label>
+          <input id="posZ" type="number" step="0.01" value="0" />
+
+          <label>Rot X</label>
+          <input id="rotX" type="number" step="1" value="0" />
+          <label>Rot Y</label>
+          <input id="rotY" type="number" step="1" value="0" />
+          <label>Rot Z</label>
+          <input id="rotZ" type="number" step="1" value="0" />
+        </div>
+        <div class="row" style="margin-top:8px;">
+          <button id="apply" class="btn ghost">Apply to Target</button>
+          <button id="downloadConfig" class="btn primary">Download naturalTargets config</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div id="ar-preview">
+    <a-scene
+      mindar-image="imageTargetSrc: assets/targets/compiled/targets.mind"
+      embedded
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false">
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-assets>
+        <img id="s01" src="assets/overlays/samples/sample-01.svg" />
+        <img id="s02" src="assets/overlays/samples/sample-02.svg" />
+        <img id="s03" src="assets/overlays/samples/sample-03.svg" />
+        <img id="s04" src="assets/overlays/samples/sample-04.svg" />
+        <img id="s05" src="assets/overlays/samples/sample-05.svg" />
+        <img id="s06" src="assets/overlays/samples/sample-06.svg" />
+        <img id="s07" src="assets/overlays/samples/sample-07.svg" />
+        <img id="s08" src="assets/overlays/samples/sample-08.svg" />
+        <img id="s09" src="assets/overlays/samples/sample-09.svg" />
+        <img id="s10" src="assets/overlays/samples/sample-10.svg" />
+      </a-assets>
+
+      <!-- target entities 0..9 -->
+      <a-entity id="t-0" mindar-image-target="targetIndex: 0">
+        <a-plane class="overlay-plane" width="1" height="0.56" material="src: #s01; transparent: true;"></a-plane>
+      </a-entity>
+      <a-entity id="t-1" mindar-image-target="targetIndex: 1">
+        <a-plane class="overlay-plane" width="1" height="0.56" material="src: #s02; transparent: true;"></a-plane>
+      </a-entity>
+      <a-entity id="t-2" mindar-image-target="targetIndex: 2">
+        <a-plane class="overlay-plane" width="1" height="0.56" material="src: #s03; transparent: true;"></a-plane>
+      </a-entity>
+      <a-entity id="t-3" mindar-image-target="targetIndex: 3">
+        <a-plane class="overlay-plane" width="1" height="0.56" material="src: #s04; transparent: true;"></a-plane>
+      </a-entity>
+      <a-entity id="t-4" mindar-image-target="targetIndex: 4">
+        <a-plane class="overlay-plane" width="1" height="0.56" material="src: #s05; transparent: true;"></a-plane>
+      </a-entity>
+      <a-entity id="t-5" mindar-image-target="targetIndex: 5">
+        <a-plane class="overlay-plane" width="1" height="0.56" material="src: #s06; transparent: true;"></a-plane>
+      </a-entity>
+      <a-entity id="t-6" mindar-image-target="targetIndex: 6">
+        <a-plane class="overlay-plane" width="1" height="0.56" material="src: #s07; transparent: true;"></a-plane>
+      </a-entity>
+      <a-entity id="t-7" mindar-image-target="targetIndex: 7">
+        <a-plane class="overlay-plane" width="1" height="0.56" material="src: #s08; transparent: true;"></a-plane>
+      </a-entity>
+      <a-entity id="t-8" mindar-image-target="targetIndex: 8">
+        <a-plane class="overlay-plane" width="1" height="0.56" material="src: #s09; transparent: true;"></a-plane>
+      </a-entity>
+      <a-entity id="t-9" mindar-image-target="targetIndex: 9">
+        <a-plane class="overlay-plane" width="1" height="0.56" material="src: #s10; transparent: true;"></a-plane>
+      </a-entity>
+
+    </a-scene>
+  </div>
+
+  <script src="./admin-natural.js"></script>
+</body>
+</html>
+

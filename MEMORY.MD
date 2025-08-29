@@ -15,3 +15,8 @@
 - Added admin.html and admin.js for calibration (overlay image, size, position, rotation) with config download/upload. Added assets/config.json and updated script.js to load/apply it. Switched overlays to SVG and created 10 shape SVGs.
 - Next: Generate actual .patt files using AR.js generator, add printable markers, push and enable GitHub Pages, then test on iOS/Android.
 
+2025-08-29
+- Added natural image workflow: mind-hunt.html (MindAR-based hunt) and admin-natural.html (capture target photo, preview .mind, map overlays), with mind-hunt.js/admin-natural.js.
+- Created assets/targets/captures and assets/targets/compiled with .gitkeep.
+- Added 10 sample overlay images under assets/overlays/samples/.
+

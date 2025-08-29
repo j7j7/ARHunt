@@ -18,6 +18,10 @@ Future option (not for v1): mind-ar-js
 - Pros: Natural image targets (no black border markers).
 - Cons: Simple geometric shapes track poorly; requires texture-rich images; more tuning.
 
+In this project we ship both:
+- Marker-based hunt (AR.js) as index.html.
+- Natural image hunt (MindAR) as mind-hunt.html, with admin-natural.html for capturing and mapping overlays.
+
 ## User Flow (Mermaid)
 ```mermaid
 flowchart TD
@@ -103,8 +107,9 @@ Marker tips:
 - Avoid glossy paper to reduce reflections.
 
 4) Prepare overlay images
-- Place 10 PNG overlays under assets/overlays/{shape}.png.
-- Start simple (e.g., themed frames or stickers). Keep each under ~200KB.
+- Shape overlays under assets/overlays/{shape}.svg for marker-based mode.
+- Sample picture overlays under assets/overlays/samples/sample-01..10.svg for MindAR mode.
+- Keep assets lightweight (< 200KB each where possible).
 
 5) Wire markers to overlays
 - For each a-marker (id="triangle", type="pattern", url="assets/patterns/triangle.patt", emitevents="true"), add an a-plane child:

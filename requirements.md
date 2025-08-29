@@ -73,14 +73,15 @@ Primary characteristics:
 - Library choice (v1): A-Frame + AR.js (pattern markers) via CDN.
   - Rationale: Reliable detection with simple, printable markers; robust on iOS Safari and Android Chrome; minimal setup; no install.
   - Each symbol corresponds to a .patt marker file generated from a simple shape graphic.
-- Alternative (future option): mind-ar-js for natural image targets (requires texture-rich images; simple geometric shapes are low-feature and may track poorly).
-- Anchoring: Use marker coordinate space to place a 2D plane (a-plane) textured with the overlay image; rotate so it appears as a “picture” on the wall.
+- Alternative (future option): mind-ar-js for natural image targets (requires texture-rich images; simple geometric shapes are low-feature and may track poorly). For this project, we also provide a MindAR-based flow for detecting existing room pictures.
+- Anchoring: Use marker coordinate space to place a 2D plane (a-plane) textured with the overlay image; rotate so it appears as a “picture” on the wall. For MindAR, align the plane to the detected image target.
 - Hosting: GitHub Pages (HTTPS by default). All assets under the same repo.
 - No build tooling required initially; pure static site.
 
 ## Assets
 - 10 marker pattern files: assets/patterns/{triangle|square|rectangle|circle|star|pentagon|hexagon|diamond|heart|arrow}.patt
-- 10 overlay images (PNG): assets/overlays/{shape}.png
+- 10 overlay images (SVG/PNG): assets/overlays/{shape}.svg; plus 10 sample picture overlays under assets/overlays/samples/sample-01..10.svg
+- Natural-image targets (MindAR): captured photos in assets/targets/captures/; compiled targets file at assets/targets/compiled/targets.mind
 - Optional: Printable marker sheets (PNG/PDF) for each symbol under assets/markers/ for easy placement on walls.
 
 ## Browser/Device Support Matrix (target)
