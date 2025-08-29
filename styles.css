@@ -1,0 +1,95 @@
+/* ARHunt styles (mobile-first) */
+:root {
+  --brand: #ff6f3d;
+  --brand-2: #ffc107;
+  --bg: #0f172a;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";
+  /* fun border around the app */
+  border: 6px solid var(--brand-2);
+}
+
+#ar-container, a-scene {
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Overlays */
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none; /* enable buttons to opt-in */
+}
+.overlay .panel {
+  pointer-events: auto;
+  background: rgba(15, 23, 42, 0.9);
+  border: 2px solid var(--brand);
+  border-radius: 12px;
+  padding: 18px 16px;
+  width: min(92vw, 420px);
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.hidden { display: none; }
+
+/* HUD top bar */
+#hud {
+  justify-content: start;
+  align-items: start;
+}
+#hud .hud-bar {
+  pointer-events: auto;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+.stats { font-weight: 600; }
+
+/* Buttons */
+.btn {
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  padding: 12px 16px;
+  cursor: pointer;
+}
+.btn.primary {
+  color: #0b132b;
+  background: linear-gradient(180deg, var(--brand-2), #ffb300);
+  font-weight: 700;
+}
+.btn.ghost {
+  color: var(--text);
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* Overlay plane flash on found */
+.overlay-plane.found {
+  animation: flash 0.6s ease-out;
+}
+@keyframes flash {
+  0% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+

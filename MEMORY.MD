@@ -1,0 +1,17 @@
+# MEMORY LOG
+
+2025-08-29
+- Created requirements.md detailing scope, goals, functional/non-functional requirements, acceptance criteria, risks, and deployment.
+- Created plan.md describing architecture (A-Frame + AR.js, CDN), file structure, steps, Mermaid diagrams (user flow + component interaction), local dev/testing guidance, and GitHub Pages deployment.
+- Decided v1 will use AR.js pattern markers for robust detection of simple shapes; mind-ar-js remains an option later for natural-image tracking.
+- Next steps: scaffold index.html, styles.css, script.js; generate 10 .patt markers; add 10 overlay images; push to GitHub Pages for device testing.
+
+2025-08-29
+- Added initial scaffolding: index.html (A-Frame + AR.js scene, 10 placeholder markers, menu/HUD/congrats overlays), styles.css (fun theme, border, HUD, buttons), script.js (markerFound handling, HUD updates, menu/quit/restart logic).
+- Created assets directories with .gitkeep: assets/patterns, assets/overlays, assets/markers.
+- Pending: generate 10 pattern files (.patt), add 10 overlay PNGs, and printable markers; then test via GitHub Pages on iOS/Android.
+
+2025-08-29
+- Added admin.html and admin.js for calibration (overlay image, size, position, rotation) with config download/upload. Added assets/config.json and updated script.js to load/apply it. Switched overlays to SVG and created 10 shape SVGs.
+- Next: Generate actual .patt files using AR.js generator, add printable markers, push and enable GitHub Pages, then test on iOS/Android.
+

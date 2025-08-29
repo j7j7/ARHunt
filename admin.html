@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ARHunt Admin</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+</head>
+<body>
+  <div id="admin-ui" class="overlay">
+    <div class="panel" style="width:min(96vw,520px);text-align:left;">
+      <h2>ARHunt Admin</h2>
+      <p>Use printed pattern markers. Point camera, pick a marker, adjust overlay, and download config.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:center;">
+        <label>Marker ID</label>
+        <select id="markerSelect">
+          <option value="triangle">triangle</option>
+          <option value="square">square</option>
+          <option value="rectangle">rectangle</option>
+          <option value="circle">circle</option>
+          <option value="star">star</option>
+          <option value="pentagon">pentagon</option>
+          <option value="hexagon">hexagon</option>
+          <option value="diamond">diamond</option>
+          <option value="heart">heart</option>
+          <option value="arrow">arrow</option>
+        </select>
+
+        <label>Overlay</label>
+        <select id="overlaySelect">
+          <option value="assets/overlays/triangle.svg">triangle.svg</option>
+          <option value="assets/overlays/square.svg">square.svg</option>
+          <option value="assets/overlays/rectangle.svg">rectangle.svg</option>
+          <option value="assets/overlays/circle.svg">circle.svg</option>
+          <option value="assets/overlays/star.svg">star.svg</option>
+          <option value="assets/overlays/pentagon.svg">pentagon.svg</option>
+          <option value="assets/overlays/hexagon.svg">hexagon.svg</option>
+          <option value="assets/overlays/diamond.svg">diamond.svg</option>
+          <option value="assets/overlays/heart.svg">heart.svg</option>
+          <option value="assets/overlays/arrow.svg">arrow.svg</option>
+        </select>
+
+        <label>Width</label>
+        <input id="widthInput" type="number" step="0.05" value="1" />
+        <label>Height</label>
+        <input id="heightInput" type="number" step="0.05" value="1" />
+
+        <label>Pos X</label>
+        <input id="posX" type="number" step="0.01" value="0" />
+        <label>Pos Y</label>
+        <input id="posY" type="number" step="0.01" value="0" />
+        <label>Pos Z</label>
+        <input id="posZ" type="number" step="0.01" value="0" />
+
+        <label>Rot X</label>
+        <input id="rotX" type="number" step="1" value="-90" />
+        <label>Rot Y</label>
+        <input id="rotY" type="number" step="1" value="0" />
+        <label>Rot Z</label>
+        <input id="rotZ" type="number" step="1" value="0" />
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <input id="loadConfigFile" type="file" accept="application/json" />
+        <button id="downloadBtn" class="btn primary">Download Config</button>
+      </div>
+      <p style="margin-top:8px;font-size:14px;color:var(--muted);">
+        After downloading, place the file at <code>assets/config.json</code> and commit to the repo.
+        Generate pattern files here: <a href="https://jeromeetienne.github.io/AR.js/three.js/examples/marker-training/examples/generator.html" target="_blank" rel="noopener">AR.js Marker Generator</a>.
+      </p>
+    </div>
+  </div>
+
+  <div id="ar-admin">
+    <a-scene embedded renderer="logarithmicDepthBuffer: true" vr-mode-ui="enabled: false" arjs="sourceType: webcam; debugUIEnabled: false;">
+      <a-entity camera></a-entity>
+
+      <a-assets>
+        <img id="triangleTex" src="assets/overlays/triangle.svg" />
+        <img id="squareTex" src="assets/overlays/square.svg" />
+        <img id="rectangleTex" src="assets/overlays/rectangle.svg" />
+        <img id="circleTex" src="assets/overlays/circle.svg" />
+        <img id="starTex" src="assets/overlays/star.svg" />
+        <img id="pentagonTex" src="assets/overlays/pentagon.svg" />
+        <img id="hexagonTex" src="assets/overlays/hexagon.svg" />
+        <img id="diamondTex" src="assets/overlays/diamond.svg" />
+        <img id="heartTex" src="assets/overlays/heart.svg" />
+        <img id="arrowTex" src="assets/overlays/arrow.svg" />
+      </a-assets>
+
+      <!-- Same 10 markers as main app -->
+      <a-marker id="triangle" type="pattern" url="assets/patterns/triangle.patt" emitevents="true">
+        <a-plane class="overlay-plane" rotation="-90 0 0" width="1" height="1" material="src: #triangleTex; transparent: true;"></a-plane>
+      </a-marker>
+      <a-marker id="square" type="pattern" url="assets/patterns/square.patt" emitevents="true">
+        <a-plane class="overlay-plane" rotation="-90 0 0" width="1" height="1" material="src: #squareTex; transparent: true;"></a-plane>
+      </a-marker>
+      <a-marker id="rectangle" type="pattern" url="assets/patterns/rectangle.patt" emitevents="true">
+        <a-plane class="overlay-plane" rotation="-90 0 0" width="1.3" height="0.8" material="src: #rectangleTex; transparent: true;"></a-plane>
+      </a-marker>
+      <a-marker id="circle" type="pattern" url="assets/patterns/circle.patt" emitevents="true">
+        <a-plane class="overlay-plane" rotation="-90 0 0" width="1" height="1" material="src: #circleTex; transparent: true;"></a-plane>
+      </a-marker>
+      <a-marker id="star" type="pattern" url="assets/patterns/star.patt" emitevents="true">
+        <a-plane class="overlay-plane" rotation="-90 0 0" width="1" height="1" material="src: #starTex; transparent: true;"></a-plane>
+      </a-marker>
+      <a-marker id="pentagon" type="pattern" url="assets/patterns/pentagon.patt" emitevents="true">
+        <a-plane class="overlay-plane" rotation="-90 0 0" width="1" height="1" material="src: #pentagonTex; transparent: true;"></a-plane>
+      </a-marker>
+      <a-marker id="hexagon" type="pattern" url="assets/patterns/hexagon.patt" emitevents="true">
+        <a-plane class="overlay-plane" rotation="-90 0 0" width="1" height="1" material="src: #hexagonTex; transparent: true;"></a-plane>
+      </a-marker>
+      <a-marker id="diamond" type="pattern" url="assets/patterns/diamond.patt" emitevents="true">
+        <a-plane class="overlay-plane" rotation="-90 0 0" width="1" height="1" material="src: #diamondTex; transparent: true;"></a-plane>
+      </a-marker>
+      <a-marker id="heart" type="pattern" url="assets/patterns/heart.patt" emitevents="true">
+        <a-plane class="overlay-plane" rotation="-90 0 0" width="1" height="1" material="src: #heartTex; transparent: true;"></a-plane>
+      </a-marker>
+      <a-marker id="arrow" type="pattern" url="assets/patterns/arrow.patt" emitevents="true">
+        <a-plane class="overlay-plane" rotation="-90 0 0" width="1.2" height="0.8" material="src: #arrowTex; transparent: true;"></a-plane>
+      </a-marker>
+
+    </a-scene>
+  </div>
+
+  <script src="./admin.js"></script>
+</body>
+</html>
+
