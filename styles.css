@@ -96,5 +96,6 @@ body {
 
 /* Prevent default loaders from blocking UI */
 .a-loader-title, .a-loading-screen { display: none !important; }
-.mindar-ui-loading, .mindar-ui-scanning, .mindar-ui-error { pointer-events: none !important; }
+.mindar-ui-loading, .mindar-ui-scanning, .mindar-ui-error, .mindar-ui-start { pointer-events: none !important; }
+.mindar-ui-overlay { display: none !important; }
 
