@@ -29,7 +29,7 @@ body {
   inset: 0;
   display: grid;
   place-items: center;
-  z-index: 1000; /* ensure overlays stay above AR canvas */
+  z-index: 2147483647; /* ensure overlays stay above AR canvas */
   pointer-events: auto; /* allow interaction with overlay content */
 }
 .overlay .panel {
@@ -93,4 +93,8 @@ body {
   0% { opacity: 0.4; }
   100% { opacity: 1; }
 }
+
+/* Prevent default loaders from blocking UI */
+.a-loader-title, .a-loading-screen { display: none !important; }
+.mindar-ui-loading, .mindar-ui-scanning, .mindar-ui-error { pointer-events: none !important; }
 

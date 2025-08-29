@@ -20,3 +20,6 @@
 - Created assets/targets/captures and assets/targets/compiled with .gitkeep.
 - Added 10 sample overlay images under assets/overlays/samples/.
 
+2025-08-29
+- Fixed admin and MindAR pages UI clickability: raised overlay z-index, disabled A-Frame loading screen on all scenes, and prevented loader overlays from intercepting pointer events via CSS.
+
