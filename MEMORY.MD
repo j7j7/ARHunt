@@ -23,3 +23,6 @@
 2025-08-29
 - Fixed admin and MindAR pages UI clickability: raised overlay z-index, disabled A-Frame loading screen on all scenes, and prevented loader overlays from intercepting pointer events via CSS.
 
+2025-08-29
+- Added README.md with a short summary and usage instructions (player + admin for marker-based and natural-image modes), links for Pages, troubleshooting, and credits.
+
