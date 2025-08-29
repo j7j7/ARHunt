@@ -29,7 +29,8 @@ body {
   inset: 0;
   display: grid;
   place-items: center;
-  pointer-events: none; /* enable buttons to opt-in */
+  z-index: 1000; /* ensure overlays stay above AR canvas */
+  pointer-events: auto; /* allow interaction with overlay content */
 }
 .overlay .panel {
   pointer-events: auto;
