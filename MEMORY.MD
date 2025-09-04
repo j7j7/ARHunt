@@ -26,3 +26,6 @@
 2025-08-29
 - Added README.md with a short summary and usage instructions (player + admin for marker-based and natural-image modes), links for Pages, troubleshooting, and credits.
 
+2025-09-04
+- Added WARP.md with quickstart commands (static server, HTTPS note), live URLs, and a high-level architecture overview of both modes (A-Frame + AR.js and MindAR), including how assets/config.json drives overlays for markers and natural targets. This should help future Warp sessions operate in the repo quickly.
+
