@@ -36,3 +36,5 @@
 - Also added to admin pages: admin.js (marker-based) and admin-natural.js (MindAR) create/update `.placement-guide` planes during calibration, and initialize them on load where applicable.
 - Purpose: Provide a clear in-AR bounding square/rectangle preview for placement.
 - Notes: Guides use color #22c55e at ~0.18 opacity. They are always shown; we can add a toggle or config flags later if desired.
+
+- Added mindar.html implementing the MindAR quick-start example (A-Frame 1.6.0 + MindAR 1.2.5 CDN), using the official demo card.mind, card.png, and softmind model.
