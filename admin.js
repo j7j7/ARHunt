@@ -47,6 +47,28 @@
     const [rx,ry,rz] = c.rotation;
     plane.setAttribute('rotation', `${rx} ${ry} ${rz}`);
     plane.setAttribute('material', `src: url(${c.overlaySrc}); transparent: true; side: double;`);
+    updatePlacementGuideForMarker(m);
+  }
+
+  function updatePlacementGuideForMarker(marker) {
+    const plane = marker.querySelector('.overlay-plane');
+    if (!plane) return;
+    let guide = marker.querySelector('.placement-guide');
+    if (!guide) {
+      guide = document.createElement('a-plane');
+      guide.classList.add('placement-guide');
+      guide.setAttribute('material', 'color: #22c55e; opacity: 0.18; transparent: true; side: double; shader: flat;');
+      marker.appendChild(guide);
+    }
+    const w = Number(plane.getAttribute('width')) || 1;
+    const h = Number(plane.getAttribute('height')) || 1;
+    guide.setAttribute('width', w);
+    guide.setAttribute('height', h);
+    const pos = plane.getAttribute('position') || {x:0,y:0,z:0};
+    const rot = plane.getAttribute('rotation') || {x:-90,y:0,z:0};
+    const y = typeof pos.y === 'number' ? pos.y - 0.001 : 0; // slightly behind to avoid z-fighting
+    guide.setAttribute('position', `${pos.x || 0} ${y} ${pos.z || 0}`);
+    guide.setAttribute('rotation', `${rot.x || -90} ${rot.y || 0} ${rot.z || 0}`);
   }
 
   function loadConfigIntoUI(id) {

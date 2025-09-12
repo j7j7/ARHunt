@@ -25,6 +25,7 @@
     if (keys.length > 0) total = keys.length;
     updateCounts();
 
+    // Apply config-driven transforms and update guides for configured targets
     for (const key of keys) {
       const idx = Number(key);
       const ent = document.getElementById(`target-${idx}`);
@@ -41,7 +42,37 @@
         const [rx,ry,rz] = c.rotation; plane.setAttribute('rotation', `${rx} ${ry} ${rz}`);
       }
       if (c.overlaySrc) plane.setAttribute('material', `src: ${c.overlaySrc}; transparent: true;`);
+      updatePlacementGuideForEntity(ent);
     }
+
+    // Also ensure unconfigured targets get a guide sized to their current overlay plane
+    document.querySelectorAll('[mindar-image-target]').forEach(updatePlacementGuideForEntity);
+  }
+
+  function updatePlacementGuideForEntity(ent) {
+    const plane = ent.querySelector('.overlay-plane');
+    if (!plane) return;
+    let guide = ent.querySelector('.placement-guide');
+    if (!guide) {
+      guide = document.createElement('a-plane');
+      guide.classList.add('placement-guide');
+      guide.setAttribute('material', 'color: #22c55e; opacity: 0.18; transparent: true; side: double; shader: flat;');
+      ent.appendChild(guide);
+    }
+    const w = Number(plane.getAttribute('width')) || 1;
+    const h = Number(plane.getAttribute('height')) || 1;
+    guide.setAttribute('width', w);
+    guide.setAttribute('height', h);
+    const pos = plane.getAttribute('position') || {x:0,y:0,z:0};
+    const rot = plane.getAttribute('rotation') || {x:0,y:0,z:0};
+    // Slightly behind the overlay-plane along z to avoid z-fighting
+    const z = typeof pos.z === 'number' ? pos.z - 0.001 : 0;
+    guide.setAttribute('position', `${pos.x || 0} ${pos.y || 0} ${z}`);
+    guide.setAttribute('rotation', `${rot.x || 0} ${rot.y || 0} ${rot.z || 0}`);
+  }
+
+  function updateAllPlacementGuides() {
+    document.querySelectorAll('[mindar-image-target]').forEach(updatePlacementGuideForEntity);
   }
 
   async function loadConfig() {
@@ -92,6 +123,7 @@
   window.addEventListener('load', async () => {
     await loadConfig();
     applyConfigToTargets();
+    updateAllPlacementGuides();
     bindUI();
     // MindAR initializes automatically via component
     // Wait a bit for entities to be ready, then bind

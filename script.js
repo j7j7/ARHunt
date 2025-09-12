@@ -32,26 +32,52 @@
     const id = marker.getAttribute('id');
     const plane = marker.querySelector('.overlay-plane');
     if (!plane) return;
-    const c = config[id];
-    if (!c) return;
-    // size
-    if (typeof c.width === 'number') plane.setAttribute('width', c.width);
-    if (typeof c.height === 'number') plane.setAttribute('height', c.height);
-    // position
-    if (Array.isArray(c.position)) {
-      const [x, y, z] = c.position;
-      plane.setAttribute('position', `${x} ${y} ${z}`);
+    const c = config[id] || null;
+    // Apply config if present
+    if (c) {
+      // size
+      if (typeof c.width === 'number') plane.setAttribute('width', c.width);
+      if (typeof c.height === 'number') plane.setAttribute('height', c.height);
+      // position
+      if (Array.isArray(c.position)) {
+        const [x, y, z] = c.position;
+        plane.setAttribute('position', `${x} ${y} ${z}`);
+      }
+      // rotation
+      if (Array.isArray(c.rotation)) {
+        const [rx, ry, rz] = c.rotation;
+        plane.setAttribute('rotation', `${rx} ${ry} ${rz}`);
+      }
+      // overlaySrc (URL or asset selector like #triangleTex)
+      if (c.overlaySrc) {
+        // Use URL for flexibility; for asset id, ensure it starts with '#'
+        plane.setAttribute('material', `src: url(${c.overlaySrc}); transparent: true; side: double;`);
+      }
     }
-    // rotation
-    if (Array.isArray(c.rotation)) {
-      const [rx, ry, rz] = c.rotation;
-      plane.setAttribute('rotation', `${rx} ${ry} ${rz}`);
+    // Always update or create the placement guide to mirror the overlay plane
+    updatePlacementGuide(marker);
+  }
+
+  function updatePlacementGuide(marker) {
+    const plane = marker.querySelector('.overlay-plane');
+    if (!plane) return;
+    let guide = marker.querySelector('.placement-guide');
+    if (!guide) {
+      guide = document.createElement('a-plane');
+      guide.classList.add('placement-guide');
+      guide.setAttribute('material', 'color: #22c55e; opacity: 0.18; transparent: true; side: double; shader: flat;');
+      marker.appendChild(guide);
     }
-    // overlaySrc (URL or asset selector like #triangleTex)
-    if (c.overlaySrc) {
-      // Use URL for flexibility; for asset id, ensure it starts with '#'
-      plane.setAttribute('material', `src: url(${c.overlaySrc}); transparent: true; side: double;`);
-    }
+    const w = Number(plane.getAttribute('width')) || 1;
+    const h = Number(plane.getAttribute('height')) || 1;
+    guide.setAttribute('width', w);
+    guide.setAttribute('height', h);
+    const pos = plane.getAttribute('position') || {x:0,y:0,z:0};
+    const rot = plane.getAttribute('rotation') || {x:-90,y:0,z:0};
+    // Slightly behind the overlay-plane along its local normal to avoid z-fighting
+    const y = typeof pos.y === 'number' ? pos.y - 0.001 : 0;
+    guide.setAttribute('position', `${pos.x || 0} ${y} ${pos.z || 0}`);
+    guide.setAttribute('rotation', `${rot.x || -90} ${rot.y || 0} ${rot.z || 0}`);
   }
 
   function resetGame() {

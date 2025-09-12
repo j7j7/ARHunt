@@ -53,15 +53,37 @@
   function entityFor(idx){ return document.getElementById(`t-${idx}`); }
 
   function applyToPreview(idx){
-    const ent = entityFor(idx);
-    if(!ent) return;
+   const ent = entityFor(idx);
+   if(!ent) return;
+   const plane = ent.querySelector('.overlay-plane');
+   if(!plane) return;
+   plane.setAttribute('material', `src: ${overlaySelect.value}; transparent: true;`);
+   plane.setAttribute('width', Number(width.value));
+   plane.setAttribute('height', Number(height.value));
+   plane.setAttribute('position', `${Number(posX.value)} ${Number(posY.value)} ${Number(posZ.value)}`);
+   plane.setAttribute('rotation', `${Number(rotX.value)} ${Number(rotY.value)} ${Number(rotZ.value)}`);
+   updatePlacementGuideForEntity(ent);
+  }
+
+  function updatePlacementGuideForEntity(ent){
     const plane = ent.querySelector('.overlay-plane');
     if(!plane) return;
-    plane.setAttribute('material', `src: ${overlaySelect.value}; transparent: true;`);
-    plane.setAttribute('width', Number(width.value));
-    plane.setAttribute('height', Number(height.value));
-    plane.setAttribute('position', `${Number(posX.value)} ${Number(posY.value)} ${Number(posZ.value)}`);
-    plane.setAttribute('rotation', `${Number(rotX.value)} ${Number(rotY.value)} ${Number(rotZ.value)}`);
+    let guide = ent.querySelector('.placement-guide');
+    if(!guide){
+      guide = document.createElement('a-plane');
+      guide.classList.add('placement-guide');
+      guide.setAttribute('material', 'color: #22c55e; opacity: 0.18; transparent: true; side: double; shader: flat;');
+      ent.appendChild(guide);
+    }
+    const w = Number(plane.getAttribute('width')) || 1;
+    const h = Number(plane.getAttribute('height')) || 1;
+    guide.setAttribute('width', w);
+    guide.setAttribute('height', h);
+    const pos = plane.getAttribute('position') || {x:0,y:0,z:0};
+    const rot = plane.getAttribute('rotation') || {x:0,y:0,z:0};
+    const z = typeof pos.z === 'number' ? pos.z - 0.001 : 0; // slightly behind to avoid z-fighting
+    guide.setAttribute('position', `${pos.x || 0} ${pos.y || 0} ${z}`);
+    guide.setAttribute('rotation', `${rot.x || 0} ${rot.y || 0} ${rot.z || 0}`);
   }
 
   applyBtn?.addEventListener('click', ()=>{
@@ -104,5 +126,8 @@
     const scene = document.querySelector('a-scene');
     scene.setAttribute('mindar-image', `imageTargetSrc: ${url}`);
   });
+
+  // Initialize placement guides for all preview targets using current plane settings
+  document.querySelectorAll('[mindar-image-target]').forEach(updatePlacementGuideForEntity);
 })();
 

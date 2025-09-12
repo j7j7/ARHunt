@@ -29,3 +29,10 @@
 2025-09-04
 - Added WARP.md with quickstart commands (static server, HTTPS note), live URLs, and a high-level architecture overview of both modes (A-Frame + AR.js and MindAR), including how assets/config.json drives overlays for markers and natural targets. This should help future Warp sessions operate in the repo quickly.
 
+2025-09-12
+- Added translucent placement guide planes in both modes to show where overlays will be placed:
+  - Marker-based (AR.js): script.js now creates a `.placement-guide` a-plane per marker that mirrors the `.overlay-plane` size/position/rotation and sits slightly behind it to avoid z-fighting.
+  - Natural-image (MindAR): mind-hunt.js does the same for each `[mindar-image-target]` entity and updates after applying config.
+- Also added to admin pages: admin.js (marker-based) and admin-natural.js (MindAR) create/update `.placement-guide` planes during calibration, and initialize them on load where applicable.
+- Purpose: Provide a clear in-AR bounding square/rectangle preview for placement.
+- Notes: Guides use color #22c55e at ~0.18 opacity. They are always shown; we can add a toggle or config flags later if desired.
