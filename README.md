@@ -12,6 +12,7 @@ If GitHub Pages is enabled for this repo, open:
 - Admin (marker-based): https://j7j7.github.io/ARHunt/admin.html
 - MindAR hunt (natural-image): https://j7j7.github.io/ARHunt/mind-hunt.html
 - Admin (natural-image): https://j7j7.github.io/ARHunt/admin-natural.html
+- MindAR quick-start example: https://j7j7.github.io/ARHunt/mindar.html
 
 ## How to play (marker-based)
 1) Open the main app URL and tap Start. Grant camera permission.

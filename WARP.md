@@ -21,6 +21,7 @@ Live (GitHub Pages) if enabled for this repo:
 - Admin (marker-based): https://j7j7.github.io/ARHunt/admin.html
 - MindAR hunt (natural-image): https://j7j7.github.io/ARHunt/mind-hunt.html
 - Admin (natural-image): https://j7j7.github.io/ARHunt/admin-natural.html
+- MindAR quick-start example: https://j7j7.github.io/ARHunt/mindar.html
 
 ## Big-picture architecture
 ARHunt is a 100% client-side AR web app with two modes:
