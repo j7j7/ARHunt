@@ -39,3 +39,4 @@
 
 - Added mindar.html implementing the MindAR quick-start example (A-Frame 1.6.0 + MindAR 1.2.5 CDN), using the official demo card.mind, card.png, and softmind model.
 - Added GitHub Pages workflow (.github/workflows/pages.yml) and .nojekyll for hosting from main; updated README and WARP with mindar.html link.
+- Added .gitignore to exclude .DS_Store and cleaned tracked instances.
