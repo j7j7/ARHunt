@@ -21,6 +21,22 @@
   }
 
   function showCongrats() {
+    // Generate code: YYYYMMDDHHMISS + random 8 digits
+    const now = new Date();
+    const pad = n => n.toString().padStart(2, '0');
+    const timestamp =
+      now.getFullYear().toString() +
+      pad(now.getMonth() + 1) +
+      pad(now.getDate()) +
+      pad(now.getHours()) +
+      pad(now.getMinutes()) +
+      pad(now.getSeconds());
+    const random8 = Math.floor(10000000 + Math.random() * 90000000);
+    const code = timestamp + random8;
+
+    const msg = `Congratulations! You have completed the hunt! Please Screen Capture this code: ${code} for reference`;
+    const msgElem = document.getElementById('congratsMsg');
+    if (msgElem) msgElem.textContent = msg;
     $('#congrats')?.classList.remove('hidden');
   }
 
