@@ -22,14 +22,14 @@
       <!-- Camera -->
       <a-entity camera></a-entity>
 
-      <!-- Minimal Assets: only triangle -->
+      <!-- Minimal Assets: only PNG overlay -->
       <a-assets>
-        <img id="triangleTex" src="assets/overlays/triangle.svg" />
+        <img id="arrowPngTex" src="assets/overlays/pattern-black_arrow.png" />
       </a-assets>
 
-      <!-- Minimal Marker: only triangle -->
-      <a-marker id="triangle" type="pattern" url="assets/patterns/triangle.patt" emitevents="true">
-        <a-plane class="overlay-plane" position="0 0.01 0" rotation="-90 0 0" width="1" height="1" material="src: #triangleTex; transparent: true; side: double;"></a-plane>
+      <!-- Hiro marker with PNG overlay -->
+      <a-marker preset="hiro" emitevents="true">
+        <a-plane class="overlay-plane" position="0 0.01 0" rotation="-90 0 0" width="1" height="1" material="src: #arrowPngTex; transparent: true; side: double;"></a-plane>
       </a-marker>
 
     </a-scene>
