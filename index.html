@@ -38,13 +38,13 @@
 
   <!-- AR Scene -->
   <div id="ar-container">
-    <a-scene
-      embedded
-      renderer="logarithmicDepthBuffer: true"
-      loading-screen="enabled: false"
-      vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: false"
-      arjs="sourceType: webcam; debugUIEnabled: false;">
+      <a-scene
+        embedded
+        renderer="logarithmicDepthBuffer: true"
+        loading-screen="enabled: false"
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: true"
+        arjs="sourceType: webcam; debugUIEnabled: false;">
 
       <!-- Camera -->
       <a-entity camera></a-entity>
