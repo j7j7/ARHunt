@@ -51,28 +51,16 @@
 
       <!-- Assets (overlay images). Placeholders; add the actual PNGs in assets/overlays/. -->
       <a-assets>
-  <img id="triangleTex" src="assets/overlays/triangle.svg" />
-  <img id="squareTex" src="assets/overlays/square.svg" />
-  <img id="rectangleTex" src="assets/overlays/rectangle.svg" />
-  <img id="circleTex" src="assets/overlays/circle.svg" />
-  <img id="starTex" src="assets/overlays/star.svg" />
-  <img id="pentagonTex" src="assets/overlays/pentagon.svg" />
-  <img id="hexagonTex" src="assets/overlays/hexagon.svg" />
-  <img id="diamondTex" src="assets/overlays/diamond.svg" />
-  <img id="heartTex" src="assets/overlays/heart.svg" />
-  <img id="arrowTex" src="assets/overlays/arrow.svg" />
-  <!-- pattern-black overlays -->
-  <img id="patternBlackArrowTex" src="assets/overlays/pattern-black_arrow.svg" />
-  <img id="patternBlackCircleTex" src="assets/overlays/pattern-black_circle.svg" />
-  <img id="patternBlackCrossTex" src="assets/overlays/pattern-black_cross.svg" />
-  <img id="patternBlackDiamondTex" src="assets/overlays/pattern-black_diamond.svg" />
-  <img id="patternBlackHeartTex" src="assets/overlays/pattern-black_heart.svg" />
-  <img id="patternBlackMoonTex" src="assets/overlays/pattern-black_moon.svg" />
-  <img id="patternBlackOvalTex" src="assets/overlays/pattern-black_oval.svg" />
-  <img id="patternBlackParallelogramTex" src="assets/overlays/pattern-black_parallelogram.svg" />
-  <img id="patternBlackSquareTex" src="assets/overlays/pattern-black_square.svg" />
-  <img id="patternBlackStarTex" src="assets/overlays/pattern-black_star.svg" />
-  <img id="patternBlackTriangleTex" src="assets/overlays/pattern-black_triangle.svg" />
+        <img id="triangleTex" src="assets/overlays/triangle.svg" />
+        <img id="squareTex" src="assets/overlays/square.svg" />
+        <img id="rectangleTex" src="assets/overlays/rectangle.svg" />
+        <img id="circleTex" src="assets/overlays/circle.svg" />
+        <img id="starTex" src="assets/overlays/star.svg" />
+        <img id="pentagonTex" src="assets/overlays/pentagon.svg" />
+        <img id="hexagonTex" src="assets/overlays/hexagon.svg" />
+        <img id="diamondTex" src="assets/overlays/diamond.svg" />
+        <img id="heartTex" src="assets/overlays/heart.svg" />
+        <img id="arrowTex" src="assets/overlays/arrow.svg" />
       </a-assets>
 
       <!-- Markers: each uses a .patt pattern file (to be added under assets/patterns/). -->
@@ -105,40 +93,6 @@
       </a-marker>
       <a-marker id="arrow" type="pattern" url="assets/patterns/arrow.patt" emitevents="true">
         <a-plane class="overlay-plane" position="0 0.01 0" rotation="-90 0 0" width="1.2" height="0.8" material="src: #arrowTex; transparent: true; side: double;"></a-plane>
-      </a-marker>
-      <!-- pattern-black markers -->
-      <a-marker id="pattern-black-arrow" type="pattern" url="assets/patterns/pattern-black_arrow.patt" emitevents="true">
-        <a-plane class="overlay-plane" position="0 0.01 0" rotation="-90 0 0" width="1.2" height="0.8" material="src: #patternBlackArrowTex; transparent: true; side: double;"></a-plane>
-      </a-marker>
-      <a-marker id="pattern-black-circle" type="pattern" url="assets/patterns/pattern-black_circle.patt" emitevents="true">
-        <a-plane class="overlay-plane" position="0 0.01 0" rotation="-90 0 0" width="1" height="1" material="src: #patternBlackCircleTex; transparent: true; side: double;"></a-plane>
-      </a-marker>
-      <a-marker id="pattern-black-cross" type="pattern" url="assets/patterns/pattern-black_cross.patt" emitevents="true">
-        <a-plane class="overlay-plane" position="0 0.01 0" rotation="-90 0 0" width="1" height="1" material="src: #patternBlackCrossTex; transparent: true; side: double;"></a-plane>
-      </a-marker>
-      <a-marker id="pattern-black-diamond" type="pattern" url="assets/patterns/pattern-black_diamond.patt" emitevents="true">
-        <a-plane class="overlay-plane" position="0 0.01 0" rotation="-90 0 0" width="1" height="1" material="src: #patternBlackDiamondTex; transparent: true; side: double;"></a-plane>
-      </a-marker>
-      <a-marker id="pattern-black-heart" type="pattern" url="assets/patterns/pattern-black_heart.patt" emitevents="true">
-        <a-plane class="overlay-plane" position="0 0.01 0" rotation="-90 0 0" width="1" height="1" material="src: #patternBlackHeartTex; transparent: true; side: double;"></a-plane>
-      </a-marker>
-      <a-marker id="pattern-black-moon" type="pattern" url="assets/patterns/pattern-black_moon.patt" emitevents="true">
-        <a-plane class="overlay-plane" position="0 0.01 0" rotation="-90 0 0" width="1" height="1" material="src: #patternBlackMoonTex; transparent: true; side: double;"></a-plane>
-      </a-marker>
-      <a-marker id="pattern-black-oval" type="pattern" url="assets/patterns/pattern-black_oval.patt" emitevents="true">
-        <a-plane class="overlay-plane" position="0 0.01 0" rotation="-90 0 0" width="1" height="1" material="src: #patternBlackOvalTex; transparent: true; side: double;"></a-plane>
-      </a-marker>
-      <a-marker id="pattern-black-parallelogram" type="pattern" url="assets/patterns/pattern-black_parallelogram.patt" emitevents="true">
-        <a-plane class="overlay-plane" position="0 0.01 0" rotation="-90 0 0" width="1.3" height="0.8" material="src: #patternBlackParallelogramTex; transparent: true; side: double;"></a-plane>
-      </a-marker>
-      <a-marker id="pattern-black-square" type="pattern" url="assets/patterns/pattern-black_square.patt" emitevents="true">
-        <a-plane class="overlay-plane" position="0 0.01 0" rotation="-90 0 0" width="1" height="1" material="src: #patternBlackSquareTex; transparent: true; side: double;"></a-plane>
-      </a-marker>
-      <a-marker id="pattern-black-star" type="pattern" url="assets/patterns/pattern-black_star.patt" emitevents="true">
-        <a-plane class="overlay-plane" position="0 0.01 0" rotation="-90 0 0" width="1" height="1" material="src: #patternBlackStarTex; transparent: true; side: double;"></a-plane>
-      </a-marker>
-      <a-marker id="pattern-black-triangle" type="pattern" url="assets/patterns/pattern-black_triangle.patt" emitevents="true">
-        <a-plane class="overlay-plane" position="0 0.01 0" rotation="-90 0 0" width="1" height="1" material="src: #patternBlackTriangleTex; transparent: true; side: double;"></a-plane>
       </a-marker>
 
     </a-scene>
