@@ -5,35 +5,57 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ARHunt</title>
   <link rel="stylesheet" href="./styles.css" />
-  <!-- A-Frame & AR.js via CDN (updated to latest stable) -->
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/ar-js@3.4.7/aframe/build/aframe-ar.js"></script>
+  <!-- A-Frame & AR.js via CDN -->
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
 </head>
-  <!-- AR Scene (Minimal for iOS crash test) -->
+<body>
+  <!-- Start Menu -->
+  <div id="menu" class="overlay">
+    <div class="panel">
+      <h1>ARHunt</h1>
+      <p>Find 10 fun symbols around the room. Move your phone to scan the walls!</p>
+      <button id="startBtn" class="btn primary">Start</button>
+    </div>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud" class="overlay hidden">
+    <div class="hud-bar">
+      <div class="stats">Found <span id="foundCount">0</span>/10</div>
+      <button id="quitBtn" class="btn ghost">Quit</button>
+    </div>
+  </div>
+
+  <!-- Congratulations -->
+  <div id="congrats" class="overlay hidden">
+    <div class="panel">
+  <h2>Congratulations!</h2>
+  <p id="congratsMsg">You found them all!</p>
+  <button id="restartBtn" class="btn primary">Play Again</button>
+    </div>
+  </div>
+
+  <!-- AR Scene -->
   <div id="ar-container">
     <a-scene
       embedded
       renderer="logarithmicDepthBuffer: true"
       loading-screen="enabled: false"
       vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: true"
+      device-orientation-permission-ui="enabled: false"
       arjs="sourceType: webcam; debugUIEnabled: false;">
 
       <!-- Camera -->
       <a-entity camera></a-entity>
 
-      <!-- Minimal Assets: only PNG overlay -->
+      <!-- Assets (overlay images). Placeholders; add the actual PNGs in assets/overlays/. -->
       <a-assets>
-        <img id="arrowPngTex" src="assets/overlays/pattern-black_arrow.png" />
-      </a-assets>
-
-      <!-- Hiro marker with PNG overlay -->
-      <a-marker preset="hiro" emitevents="true">
-        <a-plane class="overlay-plane" position="0 0.01 0" rotation="-90 0 0" width="1" height="1" material="src: #arrowPngTex; transparent: true; side: double;"></a-plane>
-      </a-marker>
-
-    </a-scene>
-  </div>
+  <img id="triangleTex" src="assets/overlays/triangle.svg" />
+  <img id="squareTex" src="assets/overlays/square.svg" />
+  <img id="rectangleTex" src="assets/overlays/rectangle.svg" />
+  <img id="circleTex" src="assets/overlays/circle.svg" />
+  <img id="starTex" src="assets/overlays/star.svg" />
   <img id="pentagonTex" src="assets/overlays/pentagon.svg" />
   <img id="hexagonTex" src="assets/overlays/hexagon.svg" />
   <img id="diamondTex" src="assets/overlays/diamond.svg" />
