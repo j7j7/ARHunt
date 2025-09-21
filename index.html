@@ -64,6 +64,7 @@
         <img id="black_starTex" src="assets/overlays/pattern-black_star.svg" />
         <img id="black_moonTex" src="assets/overlays/pattern-black_moon.svg" />
         <img id="black_moon2Tex" src="assets/overlays/pattern-black_moon2.svg" />        
+        <img id="black_crossTex" src="assets/overlays/pattern-black_cross.svg" />
       </a-assets>
 
       <!-- Markers: each uses a .patt pattern file (to be added under assets/patterns/). -->
@@ -105,6 +106,9 @@
       </a-marker>
       <a-marker id="black_moon2" type="pattern" url="assets/patterns/pattern-black_moon2.patt" emitevents="true">
         <a-plane class="overlay-plane" position="0 0.01 0" rotation="-90 0 0" width="1" height="1" material="src: #pattern-black_moonTex; transparent: true; side: double;"></a-plane>
+      </a-marker>
+      <a-marker id="black_cross" type="pattern" url="assets/patterns/pattern-black_cross.patt" emitevents="true">
+        <a-plane class="overlay-plane" position="0 0.01 0" rotation="-90 0 0" width="1" height="1" material="src: #black_crossTex; transparent: true; side: double;"></a-plane>
       </a-marker>
     </a-scene>
   </div>
