@@ -6,9 +6,41 @@
 
   const $ = (s) => document.querySelector(s);
 
+  // Object descriptions for each target
+  const objectDescriptions = {
+    0: "🎨 Abstract Art - A vibrant geometric composition",
+    1: "🌊 Ocean Waves - Peaceful blue waters in motion", 
+    2: "🏔️ Mountain Peak - Majestic snow-capped summit",
+    3: "🌸 Cherry Blossom - Delicate pink spring flowers",
+    4: "🌙 Crescent Moon - Glowing in the midnight sky",
+    5: "🦋 Butterfly - Colorful wings in graceful flight",
+    6: "🔥 Campfire - Warm flames dancing in the night",
+    7: "🌈 Rainbow - Seven colors arcing across the sky",
+    8: "🍄 Mushroom - Enchanted forest fungi",
+    9: "💎 Crystal Gem - Sparkling precious stone",
+    10: "⭐ Golden Star - Shining bright in the cosmos"
+  };
+
   function updateCounts() {
     $('#foundCount').textContent = String(found.size);
     $('#totalCount').textContent = String(total);
+  }
+
+  function updateFoundText() {
+    const foundTextEl = $('#foundText');
+    if (!foundTextEl) return;
+    
+    if (found.size === 0) {
+      foundTextEl.innerHTML = '';
+      return;
+    }
+
+    const foundArray = Array.from(found).sort((a, b) => a - b);
+    const descriptions = foundArray.map(idx => 
+      `<div class="found-item">${objectDescriptions[idx] || `Object ${idx + 1}`}</div>`
+    ).join('');
+    
+    foundTextEl.innerHTML = `<div class="found-list">${descriptions}</div>`;
   }
 
   function flashPlane(el) {
@@ -92,6 +124,7 @@
         if (!found.has(idx)) {
           found.add(idx);
           updateCounts();
+          updateFoundText();
           flashPlane(ent);
           if (found.size >= total) {
             $('#congrats').classList.remove('hidden');
@@ -109,6 +142,7 @@
     $('#quitBtn')?.addEventListener('click', () => {
       found.clear();
       updateCounts();
+      updateFoundText();
       $('#hud')?.classList.add('hidden');
       $('#menu')?.classList.remove('hidden');
       $('#congrats')?.classList.add('hidden');
@@ -116,6 +150,7 @@
     $('#restartBtn')?.addEventListener('click', () => {
       found.clear();
       updateCounts();
+      updateFoundText();
       $('#congrats')?.classList.add('hidden');
     });
   }
