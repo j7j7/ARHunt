@@ -1,7 +1,7 @@
 // MindAR hunt logic
 (function () {
   const found = new Set();
-  let total = 10;
+  let total = 11;
   let config = { naturalTargets: {} };
 
   const $ = (s) => document.querySelector(s);
