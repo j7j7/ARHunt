@@ -3,6 +3,8 @@
   const found = new Set();
   let total = 11;
   let config = { naturalTargets: {} };
+  const detectionCooldown = new Map(); // Track last detection time for each target
+  const COOLDOWN_MS = 2000; // 2 second cooldown between detections
 
   const $ = (s) => document.querySelector(s);
 
@@ -121,6 +123,16 @@
       ent.addEventListener('targetFound', () => {
         const id = ent.getAttribute('id');
         const idx = Number(id?.split('-')[1] || -1);
+        const now = Date.now();
+        const lastDetection = detectionCooldown.get(idx) || 0;
+        
+        // Check cooldown to prevent rapid false detections
+        if (now - lastDetection < COOLDOWN_MS) {
+          return; // Still in cooldown period
+        }
+        
+        detectionCooldown.set(idx, now);
+        
         if (!found.has(idx)) {
           found.add(idx);
           updateCounts();
@@ -141,6 +153,7 @@
     });
     $('#quitBtn')?.addEventListener('click', () => {
       found.clear();
+      detectionCooldown.clear();
       updateCounts();
       updateFoundText();
       $('#hud')?.classList.add('hidden');
@@ -149,6 +162,7 @@
     });
     $('#restartBtn')?.addEventListener('click', () => {
       found.clear();
+      detectionCooldown.clear();
       updateCounts();
       updateFoundText();
       $('#congrats')?.classList.add('hidden');
