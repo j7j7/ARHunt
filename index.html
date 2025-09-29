@@ -23,7 +23,7 @@
   <!-- HUD -->
   <div id="hud" class="overlay hidden">
     <div class="hud-bar">
-      <div class="stats">Found <span id="foundCount">0</span>/<span id="totalCount">11</span></div>
+      <div class="stats">Found <span id="foundCount">0</span>/<span id="totalCount">10</span></div>
       <button id="quitBtn" class="btn ghost">Quit</button>
     </div>
     <div id="foundText" class="found-text"></div>
@@ -64,7 +64,7 @@
         <img id="sample10" src="assets/overlays/samples/sample-10.svg" />
       </a-assets>
 
-      <!-- 11 possible targets -->
+      <!-- 10 possible targets -->
       <a-entity id="target-0" mindar-image-target="targetIndex: 0">
         <a-plane class="overlay-plane" position="0 0 0" rotation="0 0 0" width="1" height="0.56" material="src: #sample01; transparent: true;"></a-plane>
       </a-entity>
@@ -94,9 +94,6 @@
       </a-entity>
       <a-entity id="target-9" mindar-image-target="targetIndex: 9">
         <a-plane class="overlay-plane" position="0 0 0" rotation="0 0 0" width="1" height="0.56" material="src: #sample10; transparent: true;"></a-plane>
-      </a-entity>
-      <a-entity id="target-10" mindar-image-target="targetIndex: 10">
-        <a-plane class="overlay-plane" position="0 0 0" rotation="0 0 0" width="1" height="0.56" material="src: #star11; transparent: true;"></a-plane>
       </a-entity>
 
     </a-scene>
