@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
 
   const triggerFireworks = () => {
+    console.log('Triggering fireworks!');
     fireworks.classList.remove('hidden');
 
     // Hide fireworks after animation completes
