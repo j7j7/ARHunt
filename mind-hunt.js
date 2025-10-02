@@ -130,6 +130,8 @@ document.addEventListener('DOMContentLoaded', () => {
     congrats.classList.remove('hidden');
   };
 
+  let countdownStarted = false; // Track if countdown has been started
+
   const updateFound = (targetId, targetIndex) => {
     if (!found.includes(targetId)) {
       found.push(targetId);
@@ -145,13 +147,22 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 2000);
     }
 
-    if (found.length === total) {
-      // All targets found - start countdown before showing congratulations
+    if (found.length === total && !countdownStarted) {
+      // All targets found - start countdown before showing congratulations (only once)
+      countdownStarted = true;
       startCountdown();
     }
   };
 
+  let countdownInterval = null; // Track countdown interval
+
   const startCountdown = () => {
+    // Clear any existing countdown
+    if (countdownInterval) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+    }
+
     let countdownValue = 5;
 
     // Hide only the HUD bar (keep found text visible) and show countdown
@@ -161,12 +172,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update countdown display
     countdownTimerEl.textContent = countdownValue;
 
-    const countdownInterval = setInterval(() => {
+    countdownInterval = setInterval(() => {
       countdownValue--;
       countdownTimerEl.textContent = countdownValue;
 
       if (countdownValue <= 0) {
         clearInterval(countdownInterval);
+        countdownInterval = null;
         // Countdown finished, show congratulations
         countdown.classList.add('hidden');
         hud.classList.add('hidden'); // Now hide entire HUD including found text
@@ -203,6 +215,16 @@ document.addEventListener('DOMContentLoaded', () => {
     foundCountEl.innerText = 0;
     foundTextEl.innerText = ''; // Clear bottom text
     foundTextEl.classList.remove('show'); // Remove any show class
+    
+    // Clear any running countdown
+    if (countdownInterval) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+    }
+    countdown.classList.add('hidden');
+    
+    // Reset countdown flag
+    countdownStarted = false;
   };
 
   startBtn.addEventListener('click', () => {
