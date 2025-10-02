@@ -1,4 +1,3 @@
-// MindAR hunt logic
 document.addEventListener('DOMContentLoaded', () => {
   const startBtn = document.querySelector('#startBtn');
   const quitBtn = document.querySelector('#quitBtn');
@@ -16,6 +15,17 @@ document.addEventListener('DOMContentLoaded', () => {
   let targets = [];
   let found = [];
   let total = 0;
+
+  const descriptions = [
+    "Lakshmi Puja with family", // DA1.jpg, target-0
+    "Rama’s divine procession", // DA2.jpg, target-1
+    "Sikh procession from fort", // DA3.jpg, target-2
+    "Village celebration scene", // DA4.jpg, target-3
+    "Temple with fireworks", // DA5.jpg, target-4
+    "Vishnu battling demon", // DA6.jpg, target-5
+    "Traditional multi-tiered brass lamp (Kuthuvilakku)", // DA7.jpg, target-6
+    "Rama vs. Ravana battle" // DA8.jpg, target-7
+  ];
 
   const showCongrats = () => {
     // Generate QR code content
@@ -39,12 +49,12 @@ document.addEventListener('DOMContentLoaded', () => {
     congrats.classList.remove('hidden');
   };
 
-  const updateFound = (targetId, targetName) => {
+  const updateFound = (targetId, targetIndex) => {
     if (!found.includes(targetId)) {
       found.push(targetId);
       foundCountEl.innerText = found.length;
 
-      foundTextEl.innerText = `Found ${targetName}!`;
+      foundTextEl.innerText = descriptions[targetIndex];
       foundTextEl.classList.add('show');
       setTimeout(() => {
         foundTextEl.classList.remove('show');
@@ -61,10 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
     total = targets.length;
     totalCountEl.innerText = total;
 
-    targets.forEach((target, index) => {
-      const targetName = `Target #${index + 1}`;
+    targets.forEach((target) => {
+      const targetIndex = target.getAttribute('mindar-image-target').targetIndex;
       target.addEventListener('targetFound', () => {
-        updateFound(target.id, targetName);
+        updateFound(target.id, targetIndex);
       });
     });
   };
