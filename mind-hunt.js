@@ -33,12 +33,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const triggerFireworks = () => {
     console.log('Triggering fireworks!');
+    
+    // Clear any existing particles
+    fireworks.innerHTML = '';
     fireworks.classList.remove('hidden');
 
-    // Hide fireworks after animation completes
+    // Create 100 particles
+    for (let i = 0; i < 100; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'firework-particle';
+      
+      // Random starting position across the screen width
+      const startX = Math.random() * window.innerWidth;
+      const startY = Math.random() * 100; // Start from top 100px of screen
+      
+      // Random horizontal drift
+      const driftX = (Math.random() - 0.5) * 200; // -100px to +100px drift
+      
+      // Set initial position
+      particle.style.left = startX + 'px';
+      particle.style.top = startY + 'px';
+      
+      // Random animation duration between 2-4 seconds
+      const duration = 2 + Math.random() * 2;
+      particle.style.animation = `firework-fall ${duration}s ease-in forwards`;
+      
+      // Add horizontal drift using transform
+      particle.style.transform = `translateX(${driftX}px)`;
+      
+      fireworks.appendChild(particle);
+    }
+
+    // Hide fireworks container after animation completes
     setTimeout(() => {
       fireworks.classList.add('hidden');
-    }, 3000); // Hide after 3 seconds to allow all animations to complete
+      fireworks.innerHTML = ''; // Clean up particles
+    }, 5000);
   };
 
   const showCongrats = () => {
