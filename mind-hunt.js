@@ -72,6 +72,12 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const showCongrats = () => {
+    // Stop the AR/video feed
+    const mindarSystem = sceneEl.systems['mindar-image-system'];
+    if (mindarSystem) {
+      mindarSystem.stop();
+    }
+
     // Generate QR code content
     const now = new Date();
     const yyyy = now.getFullYear();

@@ -127,9 +127,9 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
 
 /* Countdown styles */
 #countdown {
-  justify-content: flex-start;
-  align-items: center;
-  padding-top: 10vh; /* Position in top area of screen */
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 5vh; /* Position at very top of screen */
 }
 
 .countdown-container {
