@@ -1,95 +1,63 @@
-/* ARHunt styles (mobile-first) */
-:root {
-  --brand: #ff6f3d;
-  --brand-2: #ffc107;
-  --bg: #0f172a;
-  --text: #e2e8f0;
-  --muted: #94a3b8;
-}
-
-* { box-sizing: border-box; }
-html, body { height: 100%; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";
-  /* fun border around the app */
-  border: 6px solid var(--brand-2);
-}
-
-#ar-container, a-scene {
-  width: 100vw;
-  height: 100vh;
-}
-
-/* Overlays */
+/* Overlays (Menus, HUD, etc.) */
 .overlay {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  z-index: 2147483647; /* ensure overlays stay above AR canvas */
-  pointer-events: auto; /* allow interaction with overlay content */
-}
-.overlay .panel {
-  pointer-events: auto;
-  background: rgba(15, 23, 42, 0.9);
-  border: 2px solid var(--brand);
-  border-radius: 12px;
-  padding: 18px 16px;
-  width: min(92vw, 420px);
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-
-.hidden { display: none; }
-
-/* HUD top bar */
-#hud {
-  justify-content: start;
-  align-items: start;
-}
-#hud .hud-bar {
-  pointer-events: auto;
   position: absolute;
-  top: 10px;
-  left: 10px;
-  right: 10px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.overlay.hidden {
+  display: none;
+}
+
+/* Panels */
+.panel {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Congratulations Screen */
+#congrats {
+  align-items: flex-end; /* Align panel to the bottom */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent); /* Gradient background */
+}
+
+#congrats .panel {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 10px;
-  padding: 8px 10px;
+  width: 100%;
+  max-width: none;
+  height: 25vh; /* 25% of viewport height */
+  border-radius: 12px 12px 0 0; /* Rounded corners only on top */
+  box-sizing: border-box;
+  padding: 16px;
 }
-.stats { font-weight: 600; }
 
-/* Found text display */
-.found-text {
-  pointer-events: auto;
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  right: 10px;
-  max-height: 30vh;
-  overflow-y: auto;
+#congrats h2 {
+  font-size: 1.2rem;
+  margin: 0;
 }
-.found-list {
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 10px;
-  padding: 10px;
+
+#congrats p {
+  font-size: 0.9rem;
+  margin: 0;
+  max-width: 50%;
 }
-.found-item {
-  padding: 6px 8px;
-  margin: 2px 0;
-  background: rgba(255, 111, 61, 0.1);
-  border-left: 3px solid var(--brand);
-  border-radius: 4px;
-  font-size: 14px;
-  text-align: left;
+
+#congrats #qrCodeCanvas {
+  max-width: 20vh; /* Limit QR code size */
+  max-height: 20vh;
 }
 
 /* Buttons */
