@@ -75,6 +75,10 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
   right: 10px;
   max-height: 30vh;
   overflow-y: auto;
+  font-size: 36px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--text);
 }
 .found-list {
   background: rgba(15, 23, 42, 0.8);
