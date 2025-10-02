@@ -1,3 +1,20 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#ar-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
 /* Overlays (Menus, HUD, etc.) */
 .overlay {
   position: absolute;
@@ -12,18 +29,23 @@
   z-index: 1000;
 }
 
+#menu.overlay {
+  background-color: transparent;
+}
+
 .overlay.hidden {
   display: none;
 }
 
 /* Panels */
 .panel {
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.9);
   border-radius: 12px;
   padding: 24px;
   max-width: 400px;
   text-align: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
 }
 
 /* Congratulations Screen */
@@ -32,16 +54,22 @@
   background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent); /* Gradient background */
 }
 
-#congrats .panel {
+#congrats .panel, #final-prompt .panel {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
   width: 100%;
   max-width: none;
   height: 25vh; /* 25% of viewport height */
   border-radius: 12px 12px 0 0; /* Rounded corners only on top */
   box-sizing: border-box;
   padding: 16px;
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+#final-prompt {
+    align-items: flex-end;
+    background: transparent;
 }
 
 #congrats h2 {
@@ -60,6 +88,51 @@
   max-height: 20vh;
 }
 
+/* HUD */
+#hud {
+  background-color: transparent;
+  align-items: flex-start;
+  pointer-events: none; /* Allow clicks to pass through */
+}
+
+.hud-bar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.stats {
+  color: white;
+  font-size: 1.2rem;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+#quitBtn {
+  pointer-events: auto; /* Make quit button clickable */
+}
+
+.found-text {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  font-size: 1.1rem;
+}
+
+.found-text.show {
+  opacity: 1;
+}
+
 /* Buttons */
 .btn {
   border: none;
@@ -70,11 +143,11 @@
 }
 .btn.primary {
   color: #0b132b;
-  background: linear-gradient(180deg, var(--brand-2), #ffb300);
+  background: linear-gradient(180deg, #ffd54f, #ffb300);
   font-weight: 700;
 }
 .btn.ghost {
-  color: var(--text);
+  color: white;
   background: rgba(15, 23, 42, 0.6);
   border: 1px solid rgba(255,255,255,0.15);
 }
@@ -92,4 +165,3 @@
 .a-loader-title, .a-loading-screen { display: none !important; }
 .mindar-ui-loading, .mindar-ui-scanning, .mindar-ui-error, .mindar-ui-start { pointer-events: none !important; }
 .mindar-ui-overlay { display: none !important; }
-
