@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const restartBtn = document.querySelector('#restartBtn');
   const menu = document.querySelector('#menu');
   const hud = document.querySelector('#hud');
+  const hudBar = document.querySelector('.hud-bar');
   const congrats = document.querySelector('#congrats');
   const countdown = document.querySelector('#countdown');
   const arContainer = document.querySelector('#ar-container');
@@ -72,8 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const startCountdown = () => {
     let countdownValue = 5;
 
-    // Hide HUD and show countdown
-    hud.classList.add('hidden');
+    // Hide only the HUD bar (keep found text visible) and show countdown
+    hudBar.classList.add('hidden');
     countdown.classList.remove('hidden');
 
     // Update countdown display
@@ -87,6 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(countdownInterval);
         // Countdown finished, show congratulations
         countdown.classList.add('hidden');
+        hud.classList.add('hidden'); // Now hide entire HUD including found text
         showCongrats();
       }
     }, 1000);
