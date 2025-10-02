@@ -5,12 +5,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const menu = document.querySelector('#menu');
   const hud = document.querySelector('#hud');
   const congrats = document.querySelector('#congrats');
+  const countdown = document.querySelector('#countdown');
   const arContainer = document.querySelector('#ar-container');
   const sceneEl = document.querySelector('a-scene');
   const foundCountEl = document.querySelector('#foundCount');
   const totalCountEl = document.querySelector('#totalCount');
   const foundTextEl = document.querySelector('#foundText');
   const qrCodeCanvas = document.querySelector('#qrCodeCanvas');
+  const countdownTimerEl = document.querySelector('.countdown-timer');
 
   let targets = [];
   let found = [];
@@ -62,8 +64,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (found.length === total) {
-      showCongrats();
+      // All targets found - start countdown before showing congratulations
+      startCountdown();
     }
+  };
+
+  const startCountdown = () => {
+    let countdownValue = 5;
+
+    // Hide HUD and show countdown
+    hud.classList.add('hidden');
+    countdown.classList.remove('hidden');
+
+    // Update countdown display
+    countdownTimerEl.textContent = countdownValue;
+
+    const countdownInterval = setInterval(() => {
+      countdownValue--;
+      countdownTimerEl.textContent = countdownValue;
+
+      if (countdownValue <= 0) {
+        clearInterval(countdownInterval);
+        // Countdown finished, show congratulations
+        countdown.classList.add('hidden');
+        showCongrats();
+      }
+    }, 1000);
   };
 
   const setupTargets = () => {

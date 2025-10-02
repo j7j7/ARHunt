@@ -83,13 +83,13 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
   padding: 10px;
 }
 .found-item {
-  padding: 6px 8px;
-  margin: 2px 0;
+  padding: 8px 12px;
+  margin: 4px 0;
   background: rgba(255, 111, 61, 0.1);
   border-left: 3px solid var(--brand);
   border-radius: 4px;
-  font-size: 14px;
-  text-align: left;
+  font-size: 18px;
+  text-align: center;
 }
 
 /* Buttons */
@@ -118,6 +118,21 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
 @keyframes flash {
   0% { opacity: 0.4; }
   100% { opacity: 1; }
+}
+
+/* Countdown timer styles */
+.countdown-timer {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--brand-2);
+  margin: 20px 0;
+  text-shadow: 0 0 20px rgba(255, 193, 7, 0.5);
+  animation: countdown-pulse 1s ease-in-out infinite;
+}
+
+@keyframes countdown-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
 }
 
 /* Prevent default loaders from blocking UI */
