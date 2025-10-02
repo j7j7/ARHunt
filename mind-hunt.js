@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const hudBar = document.querySelector('.hud-bar');
   const congrats = document.querySelector('#congrats');
   const countdown = document.querySelector('#countdown');
+  const fireworks = document.querySelector('#fireworks');
   const arContainer = document.querySelector('#ar-container');
   const sceneEl = document.querySelector('a-scene');
   const foundCountEl = document.querySelector('#foundCount');
@@ -29,6 +30,15 @@ document.addEventListener('DOMContentLoaded', () => {
     "Traditional multi-tiered brass lamp (Kuthuvilakku)", // DA7.jpg, target-6
     "Rama vs. Ravana battle" // DA8.jpg, target-7
   ];
+
+  const triggerFireworks = () => {
+    fireworks.classList.remove('hidden');
+
+    // Hide fireworks after animation completes
+    setTimeout(() => {
+      fireworks.classList.add('hidden');
+    }, 3000); // Hide after 3 seconds to allow all animations to complete
+  };
 
   const showCongrats = () => {
     // Generate QR code content
@@ -56,6 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!found.includes(targetId)) {
       found.push(targetId);
       foundCountEl.innerText = found.length;
+
+      // Trigger fireworks celebration for each new discovery
+      triggerFireworks();
 
       foundTextEl.innerText = descriptions[targetIndex];
       foundTextEl.classList.add('show');

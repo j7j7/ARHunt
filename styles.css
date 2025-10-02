@@ -129,6 +129,7 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
 #countdown {
   justify-content: flex-end;
   align-items: center;
+  padding-bottom: 15vh; /* Position in bottom half of screen */
 }
 
 .countdown-container {
@@ -159,6 +160,111 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.1); }
 }
+
+/* Fireworks Animation */
+.fireworks-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.firework {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: radial-gradient(circle, #ff6b35, #f7931e, #ffc107);
+  border-radius: 50%;
+  opacity: 0;
+  animation: firework-explosion 2s ease-out forwards;
+}
+
+.firework:nth-child(1) {
+  animation-delay: 0s;
+  animation-duration: 1.8s;
+}
+
+.firework:nth-child(2) {
+  animation-delay: 0.1s;
+  animation-duration: 2.2s;
+}
+
+.firework:nth-child(3) {
+  animation-delay: 0.2s;
+  animation-duration: 1.9s;
+}
+
+.firework:nth-child(4) {
+  animation-delay: 0.3s;
+  animation-duration: 2.1s;
+}
+
+.firework:nth-child(5) {
+  animation-delay: 0.4s;
+  animation-duration: 1.7s;
+}
+
+.firework:nth-child(6) {
+  animation-delay: 0.5s;
+  animation-duration: 2.3s;
+}
+
+.firework:nth-child(7) {
+  animation-delay: 0.6s;
+  animation-duration: 1.8s;
+}
+
+.firework:nth-child(8) {
+  animation-delay: 0.7s;
+  animation-duration: 2.0s;
+}
+
+.firework:nth-child(9) {
+  animation-delay: 0.8s;
+  animation-duration: 2.2s;
+}
+
+.firework:nth-child(10) {
+  animation-delay: 0.9s;
+  animation-duration: 1.9s;
+}
+
+@keyframes firework-explosion {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translate(0, 0);
+  }
+  10% {
+    opacity: 1;
+    transform: scale(0.8) translate(var(--tx, 0), var(--ty, 0));
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.2) translate(var(--tx, 0), var(--ty, 0));
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.8), 0 0 40px rgba(247, 147, 30, 0.6), 0 0 60px rgba(255, 193, 7, 0.4);
+  }
+  70% {
+    opacity: 0.8;
+    transform: scale(0.8) translate(var(--tx, 0), var(--ty, 0));
+    box-shadow: 0 0 15px rgba(255, 107, 53, 0.6), 0 0 30px rgba(247, 147, 30, 0.4), 0 0 45px rgba(255, 193, 7, 0.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.2) translate(var(--tx, 0), var(--ty, 0));
+  }
+}
+
+/* Randomize firework positions and directions */
+.firework:nth-child(1) { --tx: 150px; --ty: -120px; }
+.firework:nth-child(2) { --tx: -140px; --ty: -100px; }
+.firework:nth-child(3) { --tx: 130px; --ty: 140px; }
+.firework:nth-child(4) { --tx: -160px; --ty: 110px; }
+.firework:nth-child(5) { --tx: 180px; --ty: -80px; }
+.firework:nth-child(6) { --tx: -120px; --ty: -150px; }
+.firework:nth-child(7) { --tx: 110px; --ty: 160px; }
+.firework:nth-child(8) { --tx: -170px; --ty: 90px; }
+.firework:nth-child(9) { --tx: 140px; --ty: -130px; }
+.firework:nth-child(10) { --tx: -150px; --ty: 120px; }
 
 /* Prevent default loaders from blocking UI */
 .a-loader-title, .a-loading-screen { display: none !important; }
