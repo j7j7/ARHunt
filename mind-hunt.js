@@ -2,11 +2,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const startBtn = document.querySelector('#startBtn');
   const quitBtn = document.querySelector('#quitBtn');
   const restartBtn = document.querySelector('#restartBtn');
-  const continueBtn = document.querySelector('#continueBtn');
   const menu = document.querySelector('#menu');
   const hud = document.querySelector('#hud');
   const congrats = document.querySelector('#congrats');
-  const finalPrompt = document.querySelector('#final-prompt');
   const arContainer = document.querySelector('#ar-container');
   const sceneEl = document.querySelector('a-scene');
   const foundCountEl = document.querySelector('#foundCount');
@@ -29,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     "Rama vs. Ravana battle" // DA8.jpg, target-7
   ];
 
-  const showQRCodeScreen = () => {
+  const showCongrats = () => {
     // Generate QR code content
     const now = new Date();
     const yyyy = now.getFullYear();
@@ -47,12 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('QR code generated!');
     });
 
-    finalPrompt.classList.add('hidden');
+    hud.classList.add('hidden');
     congrats.classList.remove('hidden');
-  };
-
-  const showFinalPrompt = () => {
-    finalPrompt.classList.remove('hidden');
   };
 
   const updateFound = (targetId, targetIndex) => {
@@ -68,9 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (found.length === total) {
-      setTimeout(() => {
-        showFinalPrompt();
-      }, 3000);
+      showCongrats();
     }
   };
 
@@ -121,10 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
     congrats.classList.add('hidden');
     hud.classList.remove('hidden');
     resetGame();
-  });
-
-  continueBtn.addEventListener('click', () => {
-    showQRCodeScreen();
   });
 
   // Wait for the scene to load before setting up targets
