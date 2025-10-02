@@ -175,21 +175,28 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
 
 .firework-particle {
   position: absolute;
-  width: 4px;
-  height: 4px;
-  background: radial-gradient(circle, #ff6b35, #f7931e, #ffc107);
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  box-shadow: 0 0 6px rgba(255, 193, 7, 0.8);
+  opacity: 1;
 }
 
-@keyframes firework-fall {
+@keyframes firework-globe-explosion {
   0% {
     opacity: 1;
-    transform: translateY(0px);
+    transform: translate(0, 0) scale(1);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(calc(var(--end-x) - 50vw), calc(var(--end-y) - 50vh)) scale(1.2);
+  }
+  60% {
+    opacity: 0.8;
+    transform: translate(calc(var(--end-x) - 50vw), calc(var(--end-y) - 50vh)) scale(0.8);
   }
   100% {
     opacity: 0;
-    transform: translateY(400px);
+    transform: translate(calc(var(--end-x) - 50vw), calc(var(--end-y) - 50vh)) scale(0.3);
   }
 }
 

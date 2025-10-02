@@ -38,28 +38,56 @@ document.addEventListener('DOMContentLoaded', () => {
     fireworks.innerHTML = '';
     fireworks.classList.remove('hidden');
 
-    // Create 100 particles
+    // Colors for multi-colored fireworks
+    const colors = [
+      ['#ff6b35', '#f7931e', '#ffc107'], // Orange/Yellow
+      ['#e91e63', '#f06292', '#ffb3d1'], // Pink/Magenta
+      ['#2196f3', '#64b5f6', '#bbdefb'], // Blue
+      ['#4caf50', '#81c784', '#c8e6c9'], // Green
+      ['#9c27b0', '#ba68c8', '#e1bee7'], // Purple
+      ['#ff5722', '#ff8a65', '#ffccbc'], // Red/Orange
+      ['#00bcd4', '#4dd0e1', '#b2ebf2'], // Cyan
+      ['#ffeb3b', '#fff176', '#fff9c4']  // Yellow
+    ];
+
+    // Create center explosion point
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    // Create 100 particles in globe explosion pattern
     for (let i = 0; i < 100; i++) {
       const particle = document.createElement('div');
       particle.className = 'firework-particle';
       
-      // Random starting position across the screen width
-      const startX = Math.random() * window.innerWidth;
-      const startY = Math.random() * 100; // Start from top 100px of screen
+      // Random color from palette
+      const colorSet = colors[Math.floor(Math.random() * colors.length)];
+      const gradient = `radial-gradient(circle, ${colorSet[0]}, ${colorSet[1]}, ${colorSet[2]})`;
+      particle.style.background = gradient;
+      particle.style.boxShadow = `0 0 8px ${colorSet[1]}`;
       
-      // Random horizontal drift
-      const driftX = (Math.random() - 0.5) * 200; // -100px to +100px drift
+      // Calculate explosion direction (360 degrees around center)
+      const angle = (Math.PI * 2 * i) / 100; // Distribute evenly in circle
+      const randomAngle = angle + (Math.random() - 0.5) * 0.5; // Add some randomness
       
-      // Set initial position
-      particle.style.left = startX + 'px';
-      particle.style.top = startY + 'px';
+      // Random explosion distance (50-200px from center)
+      const distance = 50 + Math.random() * 150;
       
-      // Random animation duration between 2-4 seconds
-      const duration = 2 + Math.random() * 2;
-      particle.style.animation = `firework-fall ${duration}s ease-in forwards`;
+      // Calculate end position
+      const endX = centerX + Math.cos(randomAngle) * distance;
+      const endY = centerY + Math.sin(randomAngle) * distance;
       
-      // Add horizontal drift using transform
-      particle.style.transform = `translateX(${driftX}px)`;
+      // Set initial position at center
+      particle.style.left = centerX + 'px';
+      particle.style.top = centerY + 'px';
+      
+      // Random animation duration between 1.5-3 seconds
+      const duration = 1.5 + Math.random() * 1.5;
+      
+      // Set CSS custom properties for end position
+      particle.style.setProperty('--end-x', endX + 'px');
+      particle.style.setProperty('--end-y', endY + 'px');
+      
+      particle.style.animation = `firework-globe-explosion ${duration}s ease-out forwards`;
       
       fireworks.appendChild(particle);
     }
@@ -68,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       fireworks.classList.add('hidden');
       fireworks.innerHTML = ''; // Clean up particles
-    }, 5000);
+    }, 4000);
   };
 
   const showCongrats = () => {
@@ -77,6 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (mindarSystem) {
       mindarSystem.stop();
     }
+
+    // Hide the AR container completely
+    arContainer.classList.add('hidden');
 
     // Generate QR code content
     const now = new Date();
@@ -170,6 +201,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const resetGame = () => {
     found = [];
     foundCountEl.innerText = 0;
+    foundTextEl.innerText = ''; // Clear bottom text
+    foundTextEl.classList.remove('show'); // Remove any show class
   };
 
   startBtn.addEventListener('click', () => {
@@ -190,7 +223,9 @@ document.addEventListener('DOMContentLoaded', () => {
   restartBtn.addEventListener('click', () => {
     congrats.classList.add('hidden');
     hud.classList.remove('hidden');
+    arContainer.classList.remove('hidden'); // Show AR container again
     resetGame();
+    startAR(); // Restart the AR system
   });
 
   // Wait for the scene to load before setting up targets
