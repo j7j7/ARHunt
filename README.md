@@ -18,18 +18,36 @@ Main app: https://j7j7.github.io/ARHunt/
 
 ## Features
 - 8 target images to discover
-- Large, centered target descriptions for easy reading
-- Animated 5-second countdown before showing completion code
+- Large, centered target descriptions with drop shadows for readability
+- Multi-colored globe fireworks explosion on each discovery
+- Animated 5-second countdown at top of screen before completion
 - QR code generation with timestamp and unique identifier
+- Video feed stops when showing completion screen
 
 ## Local development
 - Static site; any static server works. Example: `npx http-server`.
 - iOS Safari requires HTTPS for camera; easier to test via GitHub Pages.
 
 ## Setup Requirements
-- Target images must be compiled into `assets/targets/compiled/targets.mind` using MindAR CLI/Studio
+- Target images must be compiled into `assets/targets/targets.mind` using MindAR CLI/Studio
 - Place overlay images in `assets/overlays/` directory
 - Ensure proper lighting and clear target images for best detection
+
+## Project Structure
+```
+ARHunt/
+├── index.html              # Main application
+├── mind-hunt.js            # Game logic and AR functionality
+├── styles.css              # All styling and animations
+├── assets/
+│   ├── targets/
+│   │   └── targets.mind    # MindAR compiled target file
+│   └── overlays/
+│       ├── DA1.jpg         # Target overlay images
+│       ├── DA2.jpg
+│       └── ... (DA3-DA8)
+└── README.md
+```
 
 ## Credits
 - A-Frame (https://aframe.io)
