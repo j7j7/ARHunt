@@ -520,10 +520,16 @@ const initializeApp = () => {
        }, 2000);
      }
 
-    if (found.length === total && !countdownStarted) {
-      // All targets found - start countdown before showing congratulations (only once)
-      countdownStarted = true;
-      startCountdown();
+    if (!countdownStarted) {
+      // Be robust: compute total from variable or HUD as fallback
+      const hudTotal = parseInt(totalCountEl?.innerText || '0', 10);
+      const totalTargets = (typeof total === 'number' && total > 0) ? total : (hudTotal > 0 ? hudTotal : 8);
+      if (found.length >= totalTargets) {
+        // All targets found - start countdown before showing congratulations (only once)
+        console.log(`🏁 All targets found (${found.length}/${totalTargets}) - starting countdown`);
+        countdownStarted = true;
+        startCountdown();
+      }
     }
   };
 
