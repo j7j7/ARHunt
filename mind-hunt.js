@@ -61,9 +61,9 @@ const initializeApp = () => {
    let lastNotificationTime = Date.now();
    let notifications = [];
 
-   const addNotification = (playerName, targetIndex) => {
-     const totalTargets = total > 0 ? total : 8; // Default to 8 if total not set yet
-     const message = `Player: ${playerName} found ${targetIndex + 1}/${totalTargets} item!`;
+   const addNotification = async (playerName, targetIndex, sequenceNumber) => {
+     // Use the sequence number from the remote player's discovery
+     const message = `Player: ${playerName} found item ${sequenceNumber}/8!`;
      const notification = document.createElement('div');
      notification.className = 'notification';
      notification.innerText = message;
@@ -695,7 +695,15 @@ const initializeApp = () => {
    };
 
    startBtn.addEventListener('click', async () => {
-     playerName = playerNameInput.value.trim() || 'Anonymous';
+     playerName = playerNameInput.value.trim();
+     
+     // Check if name is provided
+     if (!playerName) {
+       alert('Please enter your name to start the game.');
+       playerNameInput.focus();
+       return;
+     }
+     
      lastNotificationTime = Date.now(); // Reset for new session
      
      console.log('Starting game for player:', playerName);
@@ -711,7 +719,7 @@ const initializeApp = () => {
            new Date(d.foundAt).getTime() > lastNotificationTime &&
            d.playerName !== playerName
          );
-         newDiscoveries.forEach(d => addNotification(d.playerName, d.targetIndex));
+         newDiscoveries.forEach(d => addNotification(d.playerName, d.targetIndex, d.sequenceNumber));
          if (newDiscoveries.length > 0) {
            lastNotificationTime = Math.max(...newDiscoveries.map(d => new Date(d.foundAt).getTime()));
          }
