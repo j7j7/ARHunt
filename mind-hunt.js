@@ -65,6 +65,14 @@ document.addEventListener('DOMContentLoaded', () => {
    // Generate and set random name
    playerNameInput.value = generateRandomName();
 
+   // Handle enter key in name input
+   playerNameInput.addEventListener('keypress', (e) => {
+     if (e.key === 'Enter') {
+       e.preventDefault();
+       startBtn.click();
+     }
+   });
+
    let targets = [];
    let found = [];
    let total = 0;
