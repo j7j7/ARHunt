@@ -5,20 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ARHunt (MindAR)</title>
   <link rel="stylesheet" href="./styles.css" />
-  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-  <!-- MindAR for A-Frame -->
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar/dist/mindar-image-aframe.prod.js"></script>
+   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+   <!-- InstantDB -->
+   <script type="module">
+     import { init, i, id, InstaQLEntity } from 'https://cdn.jsdelivr.net/npm/@instantdb/core@latest/dist/index.mjs';
+     window.InstantDB = { init, i, id, InstaQLEntity };
+   </script>
+   <!-- MindAR for A-Frame -->
+   <script src="https://cdn.jsdelivr.net/npm/mind-ar/dist/mindar-image-aframe.prod.js"></script>
 </head>
 <body>
-  <!-- Start Menu -->
-  <div id="menu" class="overlay">
-    <div class="panel">
-      <h1>ARHunt</h1>
-      <p>Find the prepared picture frames in your room. Move your phone to scan!</p>
-      <button id="startBtn" class="btn primary">Start</button>
-    </div>
-  </div>
+   <!-- Start Menu -->
+   <div id="menu" class="overlay">
+     <div class="panel">
+       <h1>ARHunt</h1>
+       <p>Find the prepared picture frames in your room. Move your phone to scan!</p>
+       <label for="playerName">Enter your name:</label>
+       <input type="text" id="playerName" class="input-field" placeholder="e.g., yellow-lamp">
+       <button id="startBtn" class="btn primary">Start</button>
+     </div>
+   </div>
 
   <!-- HUD -->
   <div id="hud" class="overlay hidden">
@@ -26,8 +33,11 @@
       <div class="stats">Found <span id="foundCount">0</span>/<span id="totalCount">8</span></div>
       <button id="quitBtn" class="btn ghost">Quit</button>
     </div>
-    <div id="foundText" class="found-text"></div>
-  </div>
+     <div id="foundText" class="found-text"></div>
+
+     <!-- Notifications -->
+     <div id="notifications" class="notifications-container"></div>
+   </div>
 
   <!-- Fireworks Effect -->
   <div id="fireworks" class="fireworks-container hidden"></div>
@@ -39,15 +49,16 @@
     </div>
   </div>
 
-  <!-- Congratulations -->
-  <div id="congrats" class="overlay hidden">
-    <div class="panel">
-      <h2>Congratulations!</h2>
-      <canvas id="qrCodeCanvas"></canvas>
-      <p>You found them all! Please take a screenshot of this QR code for your record.</p>
-      <button id="restartBtn" class="btn primary">Play Again</button>
-    </div>
-  </div>
+   <!-- Congratulations -->
+   <div id="congrats" class="overlay hidden">
+     <div class="panel">
+       <h2>Congratulations!</h2>
+       <p id="playerNameDisplay"></p>
+       <canvas id="qrCodeCanvas"></canvas>
+       <p>You found them all! Please take a screenshot of this QR code for your record.</p>
+       <button id="restartBtn" class="btn primary">Play Again</button>
+     </div>
+   </div>
 
   <!-- AR Scene (MindAR) -->
   <div id="ar-container">

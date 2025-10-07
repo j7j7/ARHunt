@@ -1,5 +1,49 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const startBtn = document.querySelector('#startBtn');
+   // Initialize InstantDB
+   const { init, i, id } = window.InstantDB;
+   const schema = i.schema({
+     entities: {
+       gameSessions: i.entity({
+         playerName: i.string(),
+         completionTime: i.date(),
+         qrContent: i.string(),
+         targetsFound: i.number(),
+         expiresAt: i.date(),
+       }),
+       discoveries: i.entity({
+         playerName: i.string(),
+         targetIndex: i.number(),
+         foundAt: i.date(),
+       }),
+     },
+   });
+   const db = init({ appId: '445c0fd0-115d-46b3-b421-c05f6d6e9f89', schema });
+
+   let lastNotificationTime = Date.now();
+   let notifications = [];
+
+   const addNotification = (playerName, targetIndex) => {
+     const message = `Player: ${playerName} found ${targetIndex + 1}/${total} item!`;
+     const notification = document.createElement('div');
+     notification.className = 'notification';
+     notification.innerText = message;
+     const container = document.querySelector('#notifications');
+     container.insertBefore(notification, container.firstChild);
+     while (container.children.length > 5) {
+       container.removeChild(container.lastChild);
+     }
+     setTimeout(() => notification.classList.add('show'), 10);
+     setTimeout(() => {
+       notification.classList.remove('show');
+       setTimeout(() => {
+         if (notification.parentNode) {
+           notification.parentNode.removeChild(notification);
+         }
+       }, 300);
+     }, 2000);
+   };
+
+   const startBtn = document.querySelector('#startBtn');
   const quitBtn = document.querySelector('#quitBtn');
   const restartBtn = document.querySelector('#restartBtn');
   const menu = document.querySelector('#menu');
@@ -12,24 +56,39 @@ document.addEventListener('DOMContentLoaded', () => {
   const sceneEl = document.querySelector('a-scene');
   const foundCountEl = document.querySelector('#foundCount');
   const totalCountEl = document.querySelector('#totalCount');
-  const foundTextEl = document.querySelector('#foundText');
-  const qrCodeCanvas = document.querySelector('#qrCodeCanvas');
-  const countdownTimerEl = document.querySelector('.countdown-timer');
+   const foundTextEl = document.querySelector('#foundText');
+   const qrCodeCanvas = document.querySelector('#qrCodeCanvas');
+   const countdownTimerEl = document.querySelector('.countdown-timer');
+   const playerNameInput = document.querySelector('#playerName');
+   const playerNameDisplay = document.querySelector('#playerNameDisplay');
 
-  let targets = [];
-  let found = [];
-  let total = 0;
+   // Generate and set random name
+   playerNameInput.value = generateRandomName();
 
-  const descriptions = [
-    "Lakshmi Puja with family", // DA1.jpg, target-0
-    "Rama’s divine procession", // DA2.jpg, target-1
-    "Sikh procession from fort", // DA3.jpg, target-2
-    "Village celebration scene", // DA4.jpg, target-3
-    "Temple with fireworks", // DA5.jpg, target-4
-    "Vishnu battling demon", // DA6.jpg, target-5
-    "Traditional multi-tiered brass lamp (Kuthuvilakku)", // DA7.jpg, target-6
-    "Rama vs. Ravana battle" // DA8.jpg, target-7
-  ];
+   let targets = [];
+   let found = [];
+   let total = 0;
+   let playerName = '';
+
+   const descriptions = [
+     "Lakshmi Puja with family", // DA1.jpg, target-0
+     "Rama’s divine procession", // DA2.jpg, target-1
+     "Sikh procession from fort", // DA3.jpg, target-2
+     "Village celebration scene", // DA4.jpg, target-3
+     "Temple with fireworks", // DA5.jpg, target-4
+     "Vishnu battling demon", // DA6.jpg, target-5
+     "Traditional multi-tiered brass lamp (Kuthuvilakku)", // DA7.jpg, target-6
+     "Rama vs. Ravana battle" // DA8.jpg, target-7
+   ];
+
+   const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'black', 'white', 'pink', 'brown'];
+   const objects = ['lamp', 'chair', 'ball', 'tree', 'car', 'book', 'phone', 'cup', 'hat', 'shoe'];
+
+   const generateRandomName = () => {
+     const color = colors[Math.floor(Math.random() * colors.length)];
+     const object = objects[Math.floor(Math.random() * objects.length)];
+     return `${color}-${object}`;
+   };
 
   const triggerFireworks = () => {
     console.log('Triggering fireworks!');
@@ -109,43 +168,64 @@ document.addEventListener('DOMContentLoaded', () => {
     // Hide the AR container completely
     arContainer.classList.add('hidden');
 
-    // Generate QR code content
-    const now = new Date();
-    const yyyy = now.getFullYear();
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-    const dd = String(now.getDate()).padStart(2, '0');
-    const hh = String(now.getHours()).padStart(2, '0');
-    const mi = String(now.getMinutes()).padStart(2, '0');
-    const ss = String(now.getSeconds()).padStart(2, '0');
-    const randomNumber = Math.floor(10000000 + Math.random() * 90000000);
-    const qrContent = `${yyyy}${mm}${dd}${hh}${mi}${ss}${randomNumber}`;
+     // Generate QR code content
+     const now = new Date();
+     const yyyy = now.getFullYear();
+     const mm = String(now.getMonth() + 1).padStart(2, '0');
+     const dd = String(now.getDate()).padStart(2, '0');
+     const hh = String(now.getHours()).padStart(2, '0');
+     const mi = String(now.getMinutes()).padStart(2, '0');
+     const ss = String(now.getSeconds()).padStart(2, '0');
+     const randomNumber = Math.floor(10000000 + Math.random() * 90000000);
+     const qrContent = `${playerName}-${yyyy}${mm}${dd}${hh}${mi}${ss}${randomNumber}`;
 
-    // Generate QR code
-    QRCode.toCanvas(qrCodeCanvas, qrContent, (error) => {
-      if (error) console.error(error);
-      console.log('QR code generated!');
-    });
+     // Generate QR code
+     QRCode.toCanvas(qrCodeCanvas, qrContent, (error) => {
+       if (error) console.error(error);
+       console.log('QR code generated!');
+     });
 
-    hud.classList.add('hidden');
-    congrats.classList.remove('hidden');
+     // Save to InstantDB
+     const completionTime = new Date();
+     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day from now
+     db.transact(db.tx.gameSessions[id()].update({
+       playerName,
+       completionTime,
+       qrContent,
+       targetsFound: total,
+       expiresAt,
+     }));
+
+     // Display player name
+     playerNameDisplay.innerText = `Congratulations, ${playerName}!`;
+
+     hud.classList.add('hidden');
+     congrats.classList.remove('hidden');
   };
 
   let countdownStarted = false; // Track if countdown has been started
 
-  const updateFound = (targetId, targetIndex) => {
-    if (!found.includes(targetId)) {
-      found.push(targetId);
-      foundCountEl.innerText = found.length;
+   const updateFound = (targetId, targetIndex) => {
+     if (!found.includes(targetId)) {
+       found.push(targetId);
+       foundCountEl.innerText = found.length;
 
-      // Trigger fireworks celebration for each new discovery
-      triggerFireworks();
+       // Save discovery to InstantDB
+       db.transact(db.tx.discoveries[id()].update({
+         playerName,
+         targetIndex,
+         foundAt: new Date(),
+       }));
 
-      foundTextEl.innerText = descriptions[targetIndex];
-      foundTextEl.classList.add('show');
-      setTimeout(() => {
-        foundTextEl.classList.remove('show');
-      }, 2000);
-    }
+       // Trigger fireworks celebration for each new discovery
+       triggerFireworks();
+
+       foundTextEl.innerText = descriptions[targetIndex];
+       foundTextEl.classList.add('show');
+       setTimeout(() => {
+         foundTextEl.classList.remove('show');
+       }, 2000);
+     }
 
     if (found.length === total && !countdownStarted) {
       // All targets found - start countdown before showing congratulations (only once)
@@ -210,45 +290,64 @@ document.addEventListener('DOMContentLoaded', () => {
     mindarSystem.start();
   };
 
-  const resetGame = () => {
-    found = [];
-    foundCountEl.innerText = 0;
-    foundTextEl.innerText = ''; // Clear bottom text
-    foundTextEl.classList.remove('show'); // Remove any show class
-    
-    // Clear any running countdown
-    if (countdownInterval) {
-      clearInterval(countdownInterval);
-      countdownInterval = null;
-    }
-    countdown.classList.add('hidden');
-    
-    // Reset countdown flag
-    countdownStarted = false;
-  };
+   const resetGame = () => {
+     found = [];
+     foundCountEl.innerText = 0;
+     foundTextEl.innerText = ''; // Clear bottom text
+     foundTextEl.classList.remove('show'); // Remove any show class
+     playerName = ''; // Reset player name
+     
+     // Clear any running countdown
+     if (countdownInterval) {
+       clearInterval(countdownInterval);
+       countdownInterval = null;
+     }
+     countdown.classList.add('hidden');
+     
+     // Reset countdown flag
+     countdownStarted = false;
+   };
 
-  startBtn.addEventListener('click', () => {
-    menu.classList.add('hidden');
-    hud.classList.remove('hidden');
-    arContainer.classList.remove('hidden');
-    startAR();
-  });
+   startBtn.addEventListener('click', () => {
+     playerName = playerNameInput.value.trim() || 'Anonymous';
+     lastNotificationTime = Date.now(); // Reset for new session
+     // Subscribe to discoveries for notifications
+     db.subscribeQuery({ discoveries: {} }, (resp) => {
+       if (resp.data) {
+         const discoveries = resp.data.discoveries;
+         const newDiscoveries = discoveries.filter(d =>
+           new Date(d.foundAt).getTime() > lastNotificationTime &&
+           d.playerName !== playerName
+         );
+         newDiscoveries.forEach(d => addNotification(d.playerName, d.targetIndex));
+         if (newDiscoveries.length > 0) {
+           lastNotificationTime = Math.max(...newDiscoveries.map(d => new Date(d.foundAt).getTime()));
+         }
+       }
+     });
+     menu.classList.add('hidden');
+     hud.classList.remove('hidden');
+     arContainer.classList.remove('hidden');
+     startAR();
+   });
 
-  quitBtn.addEventListener('click', () => {
-    stopAR();
-    resetGame();
-    hud.classList.add('hidden');
-    arContainer.classList.add('hidden');
-    menu.classList.remove('hidden');
-  });
+   quitBtn.addEventListener('click', () => {
+     stopAR();
+     resetGame();
+     playerNameInput.value = generateRandomName(); // Set new random name
+     hud.classList.add('hidden');
+     arContainer.classList.add('hidden');
+     menu.classList.remove('hidden');
+   });
 
-  restartBtn.addEventListener('click', () => {
-    congrats.classList.add('hidden');
-    hud.classList.remove('hidden');
-    arContainer.classList.remove('hidden'); // Show AR container again
-    resetGame();
-    startAR(); // Restart the AR system
-  });
+   restartBtn.addEventListener('click', () => {
+     congrats.classList.add('hidden');
+     hud.classList.remove('hidden');
+     arContainer.classList.remove('hidden'); // Show AR container again
+     resetGame();
+     playerNameInput.value = generateRandomName(); // Set new random name
+     startAR(); // Restart the AR system
+   });
 
   // Wait for the scene to load before setting up targets
   sceneEl.addEventListener('loaded', () => {
