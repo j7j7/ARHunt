@@ -10,6 +10,26 @@
 
    <!-- MindAR for A-Frame -->
    <script src="https://cdn.jsdelivr.net/npm/mind-ar/dist/mindar-image-aframe.prod.js"></script>
+   
+   <!-- InstantDB via Skypack -->
+   <script type="module">
+     try {
+       console.log('Loading InstantDB from Skypack...');
+       import('https://cdn.skypack.dev/@instantdb/core@0.22.6')
+         .then(InstantDB => {
+           console.log('InstantDB loaded:', InstantDB);
+           window.InstantDB = InstantDB;
+           // Dispatch event when InstantDB is ready
+           window.dispatchEvent(new CustomEvent('instantdb-ready'));
+           console.log('InstantDB ready event dispatched');
+         })
+         .catch(error => {
+           console.error('Failed to load InstantDB:', error);
+         });
+     } catch (error) {
+       console.error('Error in InstantDB loading script:', error);
+     }
+   </script>
 </head>
 <body>
    <!-- Start Menu -->

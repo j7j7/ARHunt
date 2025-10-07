@@ -1,6 +1,16 @@
-document.addEventListener('DOMContentLoaded', async () => {
-   // Initialize InstantDB
-   const { init, i, id } = await import('https://esm.sh/@instantdb/core@0.22.6');
+// Wait for both DOM and InstantDB to be ready
+const initializeApp = () => {
+   console.log('Initializing app...');
+   console.log('InstantDB available:', !!window.InstantDB);
+   
+   // Initialize InstantDB (now available globally)
+   if (!window.InstantDB) {
+     console.error('InstantDB not available on window object');
+     return;
+   }
+   
+   const { init, i, id } = window.InstantDB;
+   console.log('InstantDB methods:', { init: !!init, i: !!i, id: !!id });
    const schema = i.schema({
      entities: {
        gameSessions: i.entity({
@@ -361,4 +371,28 @@ document.addEventListener('DOMContentLoaded', async () => {
   sceneEl.addEventListener('loaded', () => {
     setupTargets();
   });
+};
+
+// Wait for both DOM and InstantDB to be ready
+let domReady = false;
+let instantDBReady = false;
+
+const checkAndInit = () => {
+  console.log('checkAndInit called - domReady:', domReady, 'instantDBReady:', instantDBReady);
+  if (domReady && instantDBReady) {
+    console.log('Both ready, initializing app');
+    initializeApp();
+  }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM Content Loaded');
+  domReady = true;
+  checkAndInit();
+});
+
+window.addEventListener('instantdb-ready', () => {
+  console.log('InstantDB Ready event received');
+  instantDBReady = true;
+  checkAndInit();
 });

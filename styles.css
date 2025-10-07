@@ -100,6 +100,29 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
   text-align: center;
 }
 
+/* Input field */
+.input-field {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.8);
+  color: var(--text);
+  font-size: 16px;
+  margin: 8px 0;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.input-field:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(255, 111, 61, 0.1);
+}
+
+.input-field::placeholder {
+  color: var(--muted);
+}
+
 /* Buttons */
 .btn {
   border: none;
