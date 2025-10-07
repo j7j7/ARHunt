@@ -137,7 +137,29 @@ This file tracks key changes made to the ARHunt project and development progress
 - `mind-hunt.js`: Simplified startup flow to let MindAR handle everything
 - `index.html`: Cleaned up test overlays from target-4
 
-**Expected Result**: Overlays should now render properly when targets are detected, with MindAR handling camera access cleanly
+## Recent Changes (October 7, 2025 - Session 3c)
+
+### Keep Camera Running Continuously 
+**New Approach**: Instead of starting/stopping camera, keep it running but control game activation
+
+**Changes Made**:
+1. **AR container visible from start**: Removed `hidden` class from `ar-container` in HTML
+2. **Start AR immediately**: AR system starts when scene loads, not when user clicks "Start"
+3. **Game activation flag**: Added `gameActive` boolean to control target response
+4. **Continuous camera**: Camera runs in background during name entry, overlays should initialize properly
+
+**Flow Now**:
+- Page loads → AR starts immediately → Camera active
+- User enters name → Menu overlay still visible over camera feed
+- User clicks "Start" → Menu hides, HUD shows, `gameActive = true`
+- Targets now respond to detection events
+
+**Files Modified**:
+- `index.html`: Removed `hidden` from ar-container
+- `mind-hunt.js`: Added gameActive flag and modified event handlers
+- `mind-hunt.js`: AR starts on scene load instead of on button click
+
+**Expected Result**: Overlays should now render properly since camera and AR system initialize fully before any interruption
 
 ## Current Issues to Watch
 - Test overlay visibility with simplified implementation on actual devices

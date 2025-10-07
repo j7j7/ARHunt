@@ -62,7 +62,8 @@ const initializeApp = () => {
    let notifications = [];
 
    const addNotification = (playerName, targetIndex) => {
-     const message = `Player: ${playerName} found ${targetIndex + 1}/${total} item!`;
+     const totalTargets = total > 0 ? total : 8; // Default to 8 if total not set yet
+     const message = `Player: ${playerName} found ${targetIndex + 1}/${totalTargets} item!`;
      const notification = document.createElement('div');
      notification.className = 'notification';
      notification.innerText = message;
@@ -120,6 +121,7 @@ const initializeApp = () => {
    let currentSessionId = '';
    let gameStartTime = null;
    let currentSessionDbId = null; // Store the database record ID
+   let gameActive = false; // Flag to control whether targets should respond
 
    const descriptions = [
      "Lakshmi Puja with family", // DA1.jpg, target-0
@@ -718,37 +720,41 @@ const initializeApp = () => {
      
      menu.classList.add('hidden');
      hud.classList.remove('hidden');
-     arContainer.classList.remove('hidden');
      
-     // Start AR directly - let MindAR handle camera permissions
-     startAR();
+     // Activate the game - AR should already be running
+     gameActive = true;
+     console.log('✅ Game activated - targets now responsive');
    });
 
    quitBtn.addEventListener('click', () => {
-     stopAR();
+     gameActive = false;
      resetGame();
      playerNameInput.value = ''; // Clear the name field
      hud.classList.add('hidden');
-     arContainer.classList.add('hidden');
      menu.classList.remove('hidden');
+     console.log('🚨 Game deactivated');
    });
 
    restartBtn.addEventListener('click', () => {
      congrats.classList.add('hidden');
      hud.classList.remove('hidden');
-     arContainer.classList.remove('hidden'); // Show AR container again
      resetGame();
      playerNameInput.value = ''; // Clear the name field
-     startAR(); // Restart the AR system
+     gameActive = true; // Reactivate the game
+     console.log('✅ Game reactivated after restart');
    });
 
-  // Wait for the scene to load before setting up targets
+  // Start AR immediately when scene loads
   console.log('🎯 Adding scene loaded event listener...');
   sceneEl.addEventListener('loaded', () => {
     console.log('🎆 SCENE LOADED EVENT TRIGGERED!');
     console.log('🎯 Scene ready state:', sceneEl.hasLoaded);
     console.log('📷 Available systems after load:', Object.keys(sceneEl.systems || {}));
     setupTargets();
+    
+    // Start AR immediately so camera is ready
+    console.log('▶️ Starting AR system immediately after scene load');
+    startAR();
   });
   
   // Also add event listeners for MindAR specific events
@@ -800,6 +806,10 @@ const initializeApp = () => {
         // Create and store handlers
         target._targetFoundHandler = () => {
           console.log(`🎆 TARGET FOUND EVENT (after AR ready) for ${target.id} (index: ${finalTargetIndex})`);
+          if (!gameActive) {
+            console.log('🚧 Target found but game not active yet - ignoring');
+            return;
+          }
           updateFound(target.id, finalTargetIndex);
         };
         
