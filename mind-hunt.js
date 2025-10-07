@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
    // Initialize InstantDB
-   const { init, i, id } = await import('https://unpkg.com/@instantdb/core@latest/dist/index.mjs');
+   const { init, i, id } = await import('https://esm.sh/@instantdb/core@0.22.6');
    const schema = i.schema({
      entities: {
        gameSessions: i.entity({
