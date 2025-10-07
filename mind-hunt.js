@@ -527,6 +527,27 @@ const initializeApp = () => {
       if (found.length >= totalTargets) {
         // All targets found - start countdown before showing congratulations (only once)
         console.log(`🏁 All targets found (${found.length}/${totalTargets}) - starting countdown`);
+        
+        // Record victory in discoveries to notify other players
+        try {
+          const victoryData = {
+            sessionId: currentSessionId,
+            playerName,
+            targetIndex: -1, // Special value to indicate victory
+            targetDescription: 'VICTORY - Found all targets! 🏆',
+            foundAt: new Date(),
+            timeSinceStart: gameStartTime ? Math.round((new Date() - gameStartTime) / 1000) : 0,
+            sequenceNumber: -1  // Special value to indicate victory
+          };
+          
+          const victoryDbId = id();
+          console.log('🏆 Recording victory notification...');
+          await db.transact(db.tx.discoveries[victoryDbId].update(victoryData));
+          console.log('✅ Victory notification recorded!');
+        } catch (error) {
+          console.error('❌ Failed to record victory notification:', error);
+        }
+        
         countdownStarted = true;
         startCountdown();
       }
@@ -726,7 +747,14 @@ const initializeApp = () => {
            new Date(d.foundAt).getTime() > lastNotificationTime &&
            d.playerName !== playerName
          );
-         newDiscoveries.forEach(d => addNotification(d.playerName, d.targetIndex, d.sequenceNumber));
+         newDiscoveries.forEach(d => {
+           if (d.targetIndex === -1 && d.sequenceNumber === -1) {
+             // Victory notification
+             addNotification(d.playerName, 7, 8); // Show as 8/8
+           } else {
+             addNotification(d.playerName, d.targetIndex, d.sequenceNumber);
+           }
+         });
          if (newDiscoveries.length > 0) {
            lastNotificationTime = Math.max(...newDiscoveries.map(d => new Date(d.foundAt).getTime()));
          }
