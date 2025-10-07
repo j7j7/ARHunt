@@ -112,6 +112,16 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
   margin: 8px 0;
   outline: none;
   transition: border-color 0.3s ease;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  pointer-events: auto;
+  user-select: auto;
+  -webkit-user-select: auto;
+  -moz-user-select: auto;
+  -ms-user-select: auto;
+  touch-action: manipulation;
 }
 
 .input-field:focus {
@@ -119,8 +129,21 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
   box-shadow: 0 0 0 3px rgba(255, 111, 61, 0.1);
 }
 
+.input-field:active,
+.input-field:focus-visible {
+  border-color: var(--brand);
+}
+
 .input-field::placeholder {
   color: var(--muted);
+}
+
+/* Ensure input container has proper pointer events */
+.overlay .panel label,
+.overlay .panel input {
+  pointer-events: auto;
+  display: block;
+  width: 100%;
 }
 
 /* Buttons */

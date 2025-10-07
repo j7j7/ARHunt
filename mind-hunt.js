@@ -13,17 +13,46 @@ const initializeApp = () => {
    console.log('InstantDB methods:', { init: !!init, i: !!i, id: !!id });
    const schema = i.schema({
      entities: {
+       // Game sessions track overall player progress
        gameSessions: i.entity({
          playerName: i.string(),
-         completionTime: i.date(),
-         qrContent: i.string(),
-         targetsFound: i.number(),
-         expiresAt: i.date(),
+         sessionId: i.string(), // Unique identifier for this game session
+         startedAt: i.date(), // When the player started the game
+         targetsFound: i.number(), // Current number of targets found
+         totalTargets: i.number(), // Total targets in the game (8)
+         currentProgress: i.number(), // Progress percentage (0-100)
+         isCompleted: i.boolean(), // Whether the session is completed
+         lastActivity: i.date(), // Last time player was active
+         expiresAt: i.date(), // When this record expires
        }),
-       discoveries: i.entity({
+       // Separate entity for completion data
+       gameCompletions: i.entity({
+         sessionId: i.string(), // Link to the game session
          playerName: i.string(),
-         targetIndex: i.number(),
-         foundAt: i.date(),
+         completionTime: i.date(), // When they completed
+         qrContent: i.string(), // QR code content
+         sessionDuration: i.number(), // Total time in seconds
+       }),
+       // Individual discoveries with detailed timing
+       discoveries: i.entity({
+         sessionId: i.string(), // Link to the game session
+         playerName: i.string(),
+         targetIndex: i.number(), // Which target (0-7)
+         targetDescription: i.string(), // Description of what was found
+         foundAt: i.date(), // Exact timestamp of discovery
+         timeSinceStart: i.number(), // Seconds since game start
+         sequenceNumber: i.number(), // Order of discovery (1st, 2nd, etc.)
+       }),
+       // Player statistics and achievements
+       playerStats: i.entity({
+         playerName: i.string(),
+         totalGamesPlayed: i.number(),
+         totalGamesCompleted: i.number(),
+         bestCompletionTime: i.number().optional(), // Best time in seconds
+         totalTargetsFound: i.number(), // Across all games
+         averageTargetsPerGame: i.number(),
+         lastPlayed: i.date(),
+         createdAt: i.date(),
        }),
      },
    });
@@ -72,17 +101,22 @@ const initializeApp = () => {
    const playerNameInput = document.querySelector('#playerName');
    const playerNameDisplay = document.querySelector('#playerNameDisplay');
 
-   const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'black', 'white', 'pink', 'brown'];
-   const objects = ['lamp', 'chair', 'ball', 'tree', 'car', 'book', 'phone', 'cup', 'hat', 'shoe'];
+   // Player name will be entered manually by the user
 
-   const generateRandomName = () => {
-     const color = colors[Math.floor(Math.random() * colors.length)];
-     const object = objects[Math.floor(Math.random() * objects.length)];
-     return `${color}-${object}`;
+   // Camera permission checking
+   const checkCameraPermissions = async () => {
+     console.log('📷 CHECKING CAMERA PERMISSIONS');
+     try {
+       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+       console.log('✅ Camera permission granted');
+       // Stop the stream immediately as we just needed to check permission
+       stream.getTracks().forEach(track => track.stop());
+       return true;
+     } catch (error) {
+       console.error('❌ Camera permission denied or not available:', error);
+       throw error;
+     }
    };
-
-   // Generate and set random name
-   playerNameInput.value = generateRandomName();
 
    // Handle enter key in name input
    playerNameInput.addEventListener('keypress', (e) => {
@@ -96,17 +130,248 @@ const initializeApp = () => {
    let found = [];
    let total = 0;
    let playerName = '';
+   let currentSessionId = '';
+   let gameStartTime = null;
+   let currentSessionDbId = null; // Store the database record ID
 
    const descriptions = [
      "Lakshmi Puja with family", // DA1.jpg, target-0
-     "Rama’s divine procession", // DA2.jpg, target-1
+     "Rama's divine procession", // DA2.jpg, target-1
      "Sikh procession from fort", // DA3.jpg, target-2
      "Village celebration scene", // DA4.jpg, target-3
      "Temple with fireworks", // DA5.jpg, target-4
      "Vishnu battling demon", // DA6.jpg, target-5
      "Traditional multi-tiered brass lamp (Kuthuvilakku)", // DA7.jpg, target-6
      "Rama vs. Ravana battle" // DA8.jpg, target-7
-     ];
+   ];
+
+   // Session and player stats management
+   const createGameSession = async () => {
+     console.log('🎯 CREATING GAME SESSION');
+     const now = new Date();
+     gameStartTime = now;
+     currentSessionId = `${playerName}-${now.getTime()}-${Math.random().toString(36).substr(2, 9)}`;
+     
+     // If total targets not set yet, use default of 8
+     const totalTargets = total > 0 ? total : 8;
+     console.log('📊 Using total targets:', totalTargets, '(from variable:', total, ')');
+     
+     const sessionData = {
+       playerName,
+       sessionId: currentSessionId,
+       startedAt: now,
+       targetsFound: 0,
+       totalTargets: totalTargets,
+       currentProgress: 0,
+       isCompleted: false,
+       lastActivity: now,
+       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day from now
+       // Required fields by existing database schema - initialize with defaults
+       completionTime: new Date(0), // Use epoch as default "not completed" marker
+       qrContent: '' // Will be updated when session completes
+     };
+
+     console.log('📊 Session Data to Create:', JSON.stringify(sessionData, null, 2));
+
+     try {
+       const sessionDbId = id();
+       currentSessionDbId = sessionDbId;
+       console.log('🔑 Generated Session DB ID:', sessionDbId);
+       
+       console.log('💾 POSTING to gameSessions table...');
+       const result = await db.transact(db.tx.gameSessions[sessionDbId].update(sessionData));
+       console.log('✅ Game session created successfully!');
+       console.log('📝 DB Response:', result);
+       console.log('🆔 Current Session ID:', currentSessionId);
+       console.log('🗂️ Current Session DB ID:', currentSessionDbId);
+       
+       // Update or create player stats
+       console.log('📈 Updating player stats...');
+       await updatePlayerStats('gameStarted');
+     } catch (error) {
+       console.error('❌ Failed to create game session:', error);
+       console.error('📊 Session data that failed:', sessionData);
+     }
+   };
+
+   const updateGameSession = async (additionalData = {}) => {
+     console.log('🔄 UPDATING GAME SESSION');
+     
+     if (!currentSessionDbId) {
+       console.warn('⚠️ No current session DB ID - cannot update session');
+       return;
+     }
+     
+     const now = new Date();
+     const progress = (found.length / total) * 100;
+     
+     const updateData = {
+       targetsFound: found.length,
+       currentProgress: Math.round(progress),
+       lastActivity: now,
+       ...additionalData
+     };
+
+     console.log('📊 Session Update Data:', JSON.stringify(updateData, null, 2));
+     console.log('🔑 Updating Session DB ID:', currentSessionDbId);
+
+     try {
+       console.log('💾 POSTING update to gameSessions table...');
+       const result = await db.transact(db.tx.gameSessions[currentSessionDbId].update(updateData));
+       console.log('✅ Game session updated successfully!');
+       console.log('📝 DB Update Response:', result);
+     } catch (error) {
+       console.error('❌ Failed to update game session:', error);
+       console.error('📊 Update data that failed:', updateData);
+       console.error('🔑 Session ID that failed:', currentSessionDbId);
+     }
+   };
+
+   const completeGameSession = async (qrContent) => {
+     console.log('🏁 COMPLETING GAME SESSION');
+     
+     if (!currentSessionDbId || !gameStartTime) {
+       console.warn('⚠️ Cannot complete session - missing session ID or start time');
+       return;
+     }
+     
+     const now = new Date();
+     const sessionDuration = Math.round((now - gameStartTime) / 1000); // in seconds
+     console.log('⏱️ Session duration:', sessionDuration, 'seconds');
+     
+     try {
+       // Update the session with completion data
+       const completionUpdateData = {
+         isCompleted: true,
+         currentProgress: 100,
+         lastActivity: now,
+         completionTime: now,
+         qrContent: qrContent
+         // Note: sessionDuration not in existing schema, but we track it in playerStats
+       };
+       
+       console.log('📊 Session completion update:', JSON.stringify(completionUpdateData, null, 2));
+       console.log('💾 POSTING session completion update...');
+       
+       await db.transact(db.tx.gameSessions[currentSessionDbId].update(completionUpdateData));
+       console.log('✅ Session completed and updated!');
+       
+       // Update player stats for completion
+       console.log('📈 Updating player stats for completion...');
+       await updatePlayerStats('gameCompleted', sessionDuration);
+       
+     } catch (error) {
+       console.error('❌ Failed to complete game session:', error);
+       console.error('🔑 Session ID that failed:', currentSessionDbId);
+       console.error('📊 Completion data that failed:', {
+         qrContent,
+         sessionDuration,
+         completionTime: now
+       });
+     }
+   };
+
+   const updatePlayerStats = async (action, completionTime = null) => {
+     console.log('📈 UPDATING PLAYER STATS');
+     console.log('🎮 Action:', action);
+     console.log('⏱️ Completion Time:', completionTime);
+     console.log('👤 Player Name:', playerName);
+     
+     try {
+       // Query existing player stats (skip if table doesn't exist)
+       console.log('🔍 Querying existing player stats...');
+       let existingStats = null;
+       let playerStatsArray = [];
+       
+       try {
+         const statsQuery = await db.queryOnce({ playerStats: { $: { where: { playerName } } } });
+         console.log('📝 Stats Query Result:', statsQuery);
+         
+         // Handle case where playerStats table doesn't exist or no data found
+         playerStatsArray = statsQuery?.data?.playerStats || statsQuery?.playerStats || [];
+         existingStats = playerStatsArray[0] || null;
+         console.log('📊 Player Stats Array:', playerStatsArray);
+         console.log('📊 Existing Stats:', existingStats);
+       } catch (statsError) {
+         console.log('⚠️ Player stats table does not exist or query failed:', statsError.message);
+         console.log('📊 Continuing without player stats...');
+         // Continue without player stats - this is optional functionality
+       }
+       
+       const now = new Date();
+       let statsData;
+       
+       if (existingStats) {
+         console.log('🔄 Updating existing player stats...');
+         // Update existing stats
+         const currentTotalGames = existingStats.totalGamesPlayed || 0;
+         const currentTotalCompleted = existingStats.totalGamesCompleted || 0;
+         const currentTotalTargets = existingStats.totalTargetsFound || 0;
+         const currentBestTime = existingStats.bestCompletionTime;
+         
+         statsData = {
+           totalGamesPlayed: action === 'gameStarted' ? currentTotalGames + 1 : currentTotalGames,
+           totalGamesCompleted: action === 'gameCompleted' ? currentTotalCompleted + 1 : currentTotalCompleted,
+           totalTargetsFound: currentTotalTargets + found.length,
+           lastPlayed: now
+         };
+         
+         if (action === 'gameCompleted') {
+           // Update average
+           const newTotalCompleted = currentTotalCompleted + 1;
+           const newTotalTargets = currentTotalTargets + found.length;
+           statsData.averageTargetsPerGame = newTotalTargets / newTotalCompleted;
+           
+           // Update best completion time
+           if (completionTime && (!currentBestTime || completionTime < currentBestTime)) {
+             statsData.bestCompletionTime = completionTime;
+           }
+         }
+         
+         console.log('📊 Stats Data to Update:', JSON.stringify(statsData, null, 2));
+         try {
+           console.log('💾 POSTING update to playerStats table...');
+           const updateResult = await db.transact(db.tx.playerStats[existingStats.id].update(statsData));
+           console.log('✅ Player stats updated successfully!');
+           console.log('📝 DB Response:', updateResult);
+         } catch (updateError) {
+           console.log('⚠️ Failed to update player stats:', updateError.message);
+         }
+       } else {
+         console.log('✨ Creating new player stats...');
+         // Create new stats
+         statsData = {
+           playerName,
+           totalGamesPlayed: 1,
+           totalGamesCompleted: action === 'gameCompleted' ? 1 : 0,
+           totalTargetsFound: found.length,
+           averageTargetsPerGame: action === 'gameCompleted' ? found.length : 0,
+           lastPlayed: now,
+           createdAt: now
+         };
+         
+         if (action === 'gameCompleted' && completionTime) {
+           statsData.bestCompletionTime = completionTime;
+         }
+         
+         console.log('📊 New Stats Data to Create:', JSON.stringify(statsData, null, 2));
+         try {
+           const newStatsId = id();
+           console.log('🔑 Generated Stats DB ID:', newStatsId);
+           console.log('💾 POSTING new stats to playerStats table...');
+           const createResult = await db.transact(db.tx.playerStats[newStatsId].update(statsData));
+           console.log('✅ New player stats created successfully!');
+           console.log('📝 DB Response:', createResult);
+         } catch (createError) {
+           console.log('⚠️ Failed to create player stats:', createError.message);
+         }
+       }
+       
+       console.log('🎉 Player stats operation completed:', statsData);
+     } catch (error) {
+       console.error('Failed to update player stats:', error);
+     }
+   };
 
    const triggerFireworks = () => {
     console.log('Triggering fireworks!');
@@ -176,7 +441,7 @@ const initializeApp = () => {
     }, 4000);
   };
 
-  const showCongrats = () => {
+  const showCongrats = async () => {
     // Stop the AR/video feed
     const mindarSystem = sceneEl.systems['mindar-image-system'];
     if (mindarSystem) {
@@ -203,16 +468,8 @@ const initializeApp = () => {
        console.log('QR code generated!');
      });
 
-     // Save to InstantDB
-     const completionTime = new Date();
-     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day from now
-     db.transact(db.tx.gameSessions[id()].update({
-       playerName,
-       completionTime,
-       qrContent,
-       targetsFound: total,
-       expiresAt,
-     }));
+     // Complete the game session with enhanced tracking
+     await completeGameSession(qrContent);
 
      // Display player name
      playerNameDisplay.innerText = `Congratulations, ${playerName}!`;
@@ -223,17 +480,45 @@ const initializeApp = () => {
 
   let countdownStarted = false; // Track if countdown has been started
 
-   const updateFound = (targetId, targetIndex) => {
+   const updateFound = async (targetId, targetIndex) => {
      if (!found.includes(targetId)) {
        found.push(targetId);
        foundCountEl.innerText = found.length;
 
-       // Save discovery to InstantDB
-       db.transact(db.tx.discoveries[id()].update({
+       // Save discovery to InstantDB with enhanced tracking
+       console.log('🎯 TARGET DISCOVERED!');
+       const foundAt = new Date();
+       const timeSinceStart = gameStartTime ? Math.round((foundAt - gameStartTime) / 1000) : 0;
+       const sequenceNumber = found.length;
+       
+       const discoveryData = {
+         sessionId: currentSessionId,
          playerName,
          targetIndex,
-         foundAt: new Date(),
-       }));
+         targetDescription: descriptions[targetIndex],
+         foundAt,
+         timeSinceStart,
+         sequenceNumber
+       };
+       
+       console.log('📊 Discovery Data to Record:', JSON.stringify(discoveryData, null, 2));
+       
+       try {
+         const discoveryDbId = id();
+         console.log('🔑 Generated Discovery DB ID:', discoveryDbId);
+         console.log('💾 POSTING to discoveries table...');
+         
+         const result = await db.transact(db.tx.discoveries[discoveryDbId].update(discoveryData));
+         console.log('✅ Discovery recorded successfully!');
+         console.log('📝 DB Response:', result);
+       } catch (error) {
+         console.error('❌ Failed to record discovery:', error);
+         console.error('📊 Discovery data that failed:', discoveryData);
+       }
+       
+       // Update the game session progress
+       console.log('🔄 Updating session progress...');
+       await updateGameSession();
 
        // Trigger fireworks celebration for each new discovery
        triggerFireworks();
@@ -286,26 +571,85 @@ const initializeApp = () => {
   };
 
   const setupTargets = () => {
+    console.log('🎯 SETTING UP TARGETS');
     targets = sceneEl.querySelectorAll('[mindar-image-target]');
     total = targets.length;
-    totalCountEl.innerText = total;
-
-    targets.forEach((target) => {
-      const targetIndex = target.getAttribute('mindar-image-target').targetIndex;
-      target.addEventListener('targetFound', () => {
-        updateFound(target.id, targetIndex);
+    console.log('📊 Total targets found:', total);
+    console.log('🎯 Target elements:', targets);
+    
+    // Log detailed target information
+    targets.forEach((target, index) => {
+      console.log(`🎯 Target ${index}:`, {
+        id: target.id,
+        tagName: target.tagName,
+        attributes: Array.from(target.attributes).map(attr => `${attr.name}="${attr.value}"`),
+        hasMindarAttribute: target.hasAttribute('mindar-image-target')
       });
     });
+    
+    totalCountEl.innerText = total;
+
+    targets.forEach((target, index) => {
+      const targetIndex = target.getAttribute('mindar-image-target').targetIndex;
+      console.log(`🎯 Setting up target ${index}: targetIndex=${targetIndex}, id=${target.id}`);
+      
+      // Add multiple event listeners to catch different events
+      target.addEventListener('targetFound', () => {
+        console.log(`🎆 TARGET FOUND EVENT triggered for ${target.id}`);
+        updateFound(target.id, targetIndex);
+      });
+      
+      target.addEventListener('targetLost', () => {
+        console.log(`🔍 Target lost event for ${target.id}`);
+      });
+    });
+    
+    console.log('✅ Target setup completed. Total targets:', total);
+    
+    // Check if the targets.mind file is accessible
+    const targetsSrc = sceneEl.getAttribute('mindar-image').split(';')[0].split(':')[1].trim();
+    console.log('📷 Targets file path:', targetsSrc);
+    
+    // Try to fetch the targets file to see if it's accessible
+    fetch(targetsSrc)
+      .then(response => {
+        console.log('📷 Targets file response:', response.status, response.statusText);
+        if (!response.ok) {
+          console.error('❌ Targets file not found or not accessible');
+        } else {
+          console.log('✅ Targets file loaded successfully');
+        }
+      })
+      .catch(error => {
+        console.error('❌ Failed to fetch targets file:', error);
+      });
   };
 
   const stopAR = () => {
+    console.log('🛑 STOPPING AR SYSTEM');
     const mindarSystem = sceneEl.systems['mindar-image-system'];
-    mindarSystem.stop();
+    if (mindarSystem) {
+      mindarSystem.stop();
+      console.log('✅ AR system stopped');
+    } else {
+      console.error('❌ No MindAR system found to stop');
+    }
   };
 
   const startAR = () => {
+    console.log('▶️ STARTING AR SYSTEM');
+    console.log('🎯 Scene element:', sceneEl);
+    console.log('🎯 Available systems:', Object.keys(sceneEl.systems || {}));
+    
     const mindarSystem = sceneEl.systems['mindar-image-system'];
-    mindarSystem.start();
+    if (mindarSystem) {
+      console.log('📷 MindAR system found, starting...');
+      mindarSystem.start();
+      console.log('✅ AR system started');
+    } else {
+      console.error('❌ No MindAR system found! Available systems:', Object.keys(sceneEl.systems || {}));
+      console.error('🔍 Scene has mindar-image attribute?', sceneEl.hasAttribute('mindar-image'));
+    }
   };
 
    const resetGame = () => {
@@ -314,6 +658,11 @@ const initializeApp = () => {
      foundTextEl.innerText = ''; // Clear bottom text
      foundTextEl.classList.remove('show'); // Remove any show class
      playerName = ''; // Reset player name
+     
+     // Clear session data
+     currentSessionId = '';
+     gameStartTime = null;
+     currentSessionDbId = null;
      
      // Clear any running countdown
      if (countdownInterval) {
@@ -326,9 +675,15 @@ const initializeApp = () => {
      countdownStarted = false;
    };
 
-   startBtn.addEventListener('click', () => {
+   startBtn.addEventListener('click', async () => {
      playerName = playerNameInput.value.trim() || 'Anonymous';
      lastNotificationTime = Date.now(); // Reset for new session
+     
+     console.log('Starting game for player:', playerName);
+     
+     // Create the game session in the database
+     await createGameSession();
+     
      // Subscribe to discoveries for notifications
      db.subscribeQuery({ discoveries: {} }, (resp) => {
        if (resp.data) {
@@ -343,16 +698,24 @@ const initializeApp = () => {
          }
        }
      });
+     
      menu.classList.add('hidden');
      hud.classList.remove('hidden');
      arContainer.classList.remove('hidden');
-     startAR();
+     
+     // Check camera permissions before starting AR
+     checkCameraPermissions().then(() => {
+       startAR();
+     }).catch(error => {
+       console.error('❌ Camera permission error:', error);
+       alert('Camera permission is required for AR to work. Please grant permission and try again.');
+     });
    });
 
    quitBtn.addEventListener('click', () => {
      stopAR();
      resetGame();
-     playerNameInput.value = generateRandomName(); // Set new random name
+     playerNameInput.value = ''; // Clear the name field
      hud.classList.add('hidden');
      arContainer.classList.add('hidden');
      menu.classList.remove('hidden');
@@ -363,13 +726,26 @@ const initializeApp = () => {
      hud.classList.remove('hidden');
      arContainer.classList.remove('hidden'); // Show AR container again
      resetGame();
-     playerNameInput.value = generateRandomName(); // Set new random name
+     playerNameInput.value = ''; // Clear the name field
      startAR(); // Restart the AR system
    });
 
   // Wait for the scene to load before setting up targets
+  console.log('🎯 Adding scene loaded event listener...');
   sceneEl.addEventListener('loaded', () => {
+    console.log('🎆 SCENE LOADED EVENT TRIGGERED!');
+    console.log('🎯 Scene ready state:', sceneEl.hasLoaded);
+    console.log('📷 Available systems after load:', Object.keys(sceneEl.systems || {}));
     setupTargets();
+  });
+  
+  // Also add event listeners for MindAR specific events
+  sceneEl.addEventListener('arReady', () => {
+    console.log('📷 AR READY EVENT - MindAR is initialized!');
+  });
+  
+  sceneEl.addEventListener('arError', (event) => {
+    console.error('❌ AR ERROR EVENT:', event.detail);
   });
 };
 
