@@ -62,8 +62,9 @@ const initializeApp = () => {
    let notifications = [];
 
    const addNotification = async (playerName, targetIndex, sequenceNumber) => {
-     // Use the sequence number from the remote player's discovery
-     const message = `Player: ${playerName} found item ${sequenceNumber}/8!`;
+     // Use the sequence number from the remote player's discovery, with fallback
+     const itemNumber = sequenceNumber || (targetIndex + 1);
+     const message = `Player: ${playerName} found item ${itemNumber}/8!`;
      const notification = document.createElement('div');
      notification.className = 'notification';
      notification.innerText = message;
