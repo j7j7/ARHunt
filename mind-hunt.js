@@ -103,20 +103,7 @@ const initializeApp = () => {
 
    // Player name will be entered manually by the user
 
-   // Camera permission checking
-   const checkCameraPermissions = async () => {
-     console.log('📷 CHECKING CAMERA PERMISSIONS');
-     try {
-       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-       console.log('✅ Camera permission granted');
-       // Stop the stream immediately as we just needed to check permission
-       stream.getTracks().forEach(track => track.stop());
-       return true;
-     } catch (error) {
-       console.error('❌ Camera permission denied or not available:', error);
-       throw error;
-     }
-   };
+   // Let MindAR handle camera permissions directly
 
    // Handle enter key in name input
    playerNameInput.addEventListener('keypress', (e) => {
@@ -733,13 +720,8 @@ const initializeApp = () => {
      hud.classList.remove('hidden');
      arContainer.classList.remove('hidden');
      
-     // Check camera permissions before starting AR
-     checkCameraPermissions().then(() => {
-       startAR();
-     }).catch(error => {
-       console.error('❌ Camera permission error:', error);
-       alert('Camera permission is required for AR to work. Please grant permission and try again.');
-     });
+     // Start AR directly - let MindAR handle camera permissions
+     startAR();
    });
 
    quitBtn.addEventListener('click', () => {
@@ -800,37 +782,15 @@ const initializeApp = () => {
           overlayOpacity: overlayPlane?.getAttribute('opacity')
         });
         
-        // Force the overlay to be visible and properly configured
+        // Log overlay properties for debugging
         if (overlayPlane) {
-          overlayPlane.setAttribute('visible', true);
-          overlayPlane.setAttribute('opacity', 1);
-          
-          // Try different positioning approaches based on target
-          if (targetId === 'target-0') {
-            // target-0 has special positioning, keep it as is
-            console.log('🔧 Keeping special positioning for target-0');
-          } else {
-            // For other targets, try more visible positioning
-            overlayPlane.setAttribute('position', '0 0 0.1');
-            overlayPlane.setAttribute('rotation', '0 0 0');
-            overlayPlane.setAttribute('scale', '2 2 2');
-            console.log('🔧 Adjusted positioning for', targetId);
-          }
-          
-          console.log('🔧 Forced overlay visibility for', targetId);
-          
-          // Add a simple test plane to verify rendering
-          if (targetId === 'target-4') {
-            const testPlane = document.createElement('a-plane');
-            testPlane.setAttribute('position', '0 0 0.2');
-            testPlane.setAttribute('width', '0.5');
-            testPlane.setAttribute('height', '0.5');
-            testPlane.setAttribute('color', 'red');
-            testPlane.setAttribute('visible', true);
-            testPlane.setAttribute('opacity', 0.8);
-            target.appendChild(testPlane);
-            console.log('🔴 Added red test plane to', targetId);
-          }
+          console.log(`🖼️ Overlay plane properties for ${targetId}:`, {
+            src: overlayPlane.getAttribute('src'),
+            position: overlayPlane.getAttribute('position'),
+            width: overlayPlane.getAttribute('width'),
+            height: overlayPlane.getAttribute('height'),
+            rotation: overlayPlane.getAttribute('rotation')
+          });
         }
         
         // Remove any existing listeners first
@@ -840,14 +800,6 @@ const initializeApp = () => {
         // Create and store handlers
         target._targetFoundHandler = () => {
           console.log(`🎆 TARGET FOUND EVENT (after AR ready) for ${target.id} (index: ${finalTargetIndex})`);
-          
-          // Make sure overlay is visible when target is found
-          const overlayPlane = target.querySelector('a-plane');
-          if (overlayPlane) {
-            overlayPlane.setAttribute('visible', true);
-            console.log('🖼️ Overlay plane made visible for', target.id);
-          }
-          
           updateFound(target.id, finalTargetIndex);
         };
         
@@ -883,41 +835,15 @@ const initializeApp = () => {
     console.error('❌ AR ERROR EVENT:', event.detail);
   });
   
-  // Add global event listener to catch any targetFound events as backup
+  // Add global event listener for debugging only (don't call updateFound to avoid duplicates)
   sceneEl.addEventListener('targetFound', (event) => {
     console.log('🎆 GLOBAL TARGET FOUND EVENT:', event.target.id, event.detail);
     
-    // Extract target index from the element ID or attribute as backup
+    // Just log for debugging - don't call updateFound since individual listeners handle it
     const targetId = event.target.id;
-    const targetIndexFromId = targetId.match(/target-(\d+)/)?.[1];
-    const targetIndexFromAttr = event.target.getAttribute('mindar-image-target');
-    
-    let targetIndex;
-    if (targetIndexFromId !== undefined) {
-      targetIndex = parseInt(targetIndexFromId);
-    } else if (targetIndexFromAttr) {
-      targetIndex = parseInt(targetIndexFromAttr.split('targetIndex:')[1]?.trim());
-    }
-    
-    if (targetIndex !== undefined && !isNaN(targetIndex)) {
-      console.log(`🎆 BACKUP: Calling updateFound for ${targetId} with index ${targetIndex}`);
-      
-      // Also try to make overlay visible from global handler
-      const overlayPlane = event.target.querySelector('a-plane');
-      if (overlayPlane) {
-        overlayPlane.setAttribute('visible', true);
-        console.log('🖼️ BACKUP: Overlay plane made visible for', targetId);
-        
-        // Double-check material is loaded
-        const material = overlayPlane.getAttribute('material');
-        console.log('🖼️ BACKUP: Overlay material:', material);
-      } else {
-        console.warn('⚠️ BACKUP: No overlay plane found in', targetId);
-      }
-      
-      updateFound(targetId, targetIndex);
-    } else {
-      console.error('❌ Could not determine target index for global event');
+    const overlayPlane = event.target.querySelector('a-plane');
+    if (overlayPlane) {
+      console.log('🖼️ GLOBAL: Overlay material check:', overlayPlane.getAttribute('material'));
     }
   });
   

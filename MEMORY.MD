@@ -80,7 +80,67 @@ This file tracks key changes made to the ARHunt project and development progress
 - `completeGameSession()`: Finalize session with completion data
 - `updatePlayerStats()`: Track cumulative player achievements
 
+## Recent Changes (October 7, 2025 - Session 3)
+
+### Simplified Overlay Implementation to Fix Rendering Issues
+**Problem**: AR detection was working but overlay images weren't appearing visually on detected targets
+
+**Root Cause Analysis**:
+- Extensive debugging revealed AR detection was working perfectly
+- Database logging, fireworks, and event handling all functional
+- Issue was with overlay plane rendering due to overly complex setup
+
+**Solution**: Simplified to match official MindAR example pattern:
+
+1. **HTML Changes**:
+   - Removed complex material attributes from overlay planes
+   - Changed from `material="src: #asset; transparent: true; opacity: 1"` to simple `src="#asset"`
+   - Standardized all positions to `position="0 0 0"` (official MindAR pattern)
+   - Set standard dimensions: `height="0.552" width="1"`
+
+2. **JavaScript Cleanup**:
+   - Removed excessive overlay manipulation code that was forcing visibility/positioning
+   - Removed test elements that were added for debugging
+   - Simplified event handlers to focus on game logic, not overlay manipulation
+   - Let MindAR handle overlay visibility automatically
+
+**Implementation Now Follows Official Pattern**:
+```html
+<a-entity mindar-image-target="targetIndex: 0">
+  <a-plane src="#da1" position="0 0 0" height="0.552" width="1" rotation="0 0 0"></a-plane>
+</a-entity>
+```
+
+**Files Modified**:
+- `index.html`: Simplified all 8 target overlay definitions
+- `mind-hunt.js`: Removed overlay manipulation code, kept clean event handlers
+- `MEMORY.MD`: Updated with solution details
+
+## Recent Changes (October 7, 2025 - Session 3b)
+
+### Fixed Camera Permission Interference Issue
+**Critical Discovery**: The overlay rendering issue was likely caused by camera permission checking that interfered with MindAR's camera initialization.
+
+**Problem**: 
+- App was checking camera permissions by creating a stream and immediately stopping it
+- This happened before MindAR tried to initialize its own camera access
+- The stopped stream may have interfered with MindAR's ability to properly render overlays
+
+**Solution**:
+1. **Removed manual camera permission checking**: Let MindAR handle camera permissions directly
+2. **Simplified AR startup**: Direct call to `startAR()` without pre-checking permissions
+3. **Cleaned up overlay manipulation**: Removed excessive debugging and manipulation code
+4. **Trust MindAR's built-in handling**: Let the library manage camera access and overlay visibility
+
+**Files Modified**:
+- `mind-hunt.js`: Removed `checkCameraPermissions()` function and its usage
+- `mind-hunt.js`: Simplified startup flow to let MindAR handle everything
+- `index.html`: Cleaned up test overlays from target-4
+
+**Expected Result**: Overlays should now render properly when targets are detected, with MindAR handling camera access cleanly
+
 ## Current Issues to Watch
-- None currently - InstantDB integration working properly with enhanced tracking
+- Test overlay visibility with simplified implementation on actual devices
+- Monitor if further adjustments needed for different target aspect ratios
 - Future: May need to update target images or MindAR compilation if detection issues arise
 - Monitor database performance with increased data collection
