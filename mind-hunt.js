@@ -96,15 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
      "Vishnu battling demon", // DA6.jpg, target-5
      "Traditional multi-tiered brass lamp (Kuthuvilakku)", // DA7.jpg, target-6
      "Rama vs. Ravana battle" // DA8.jpg, target-7
-    ];
+     ];
 
-    const generateRandomName = () => {
-     const color = colors[Math.floor(Math.random() * colors.length)];
-     const object = objects[Math.floor(Math.random() * objects.length)];
-     return `${color}-${object}`;
-   };
-
-  const triggerFireworks = () => {
+   const triggerFireworks = () => {
     console.log('Triggering fireworks!');
     
     // Clear any existing particles
