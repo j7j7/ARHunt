@@ -590,18 +590,48 @@ const initializeApp = () => {
     totalCountEl.innerText = total;
 
     targets.forEach((target, index) => {
-      const targetIndex = target.getAttribute('mindar-image-target').targetIndex;
-      console.log(`🎯 Setting up target ${index}: targetIndex=${targetIndex}, id=${target.id}`);
+      // Fix target index parsing - it's an attribute string, not a property
+      const targetIndexAttr = target.getAttribute('mindar-image-target');
+      const targetIndex = targetIndexAttr ? parseInt(targetIndexAttr.split('targetIndex:')[1]?.trim()) : index;
+      
+      console.log(`🎯 Setting up target ${index}:`, {
+        id: target.id,
+        targetIndexAttr,
+        parsedTargetIndex: targetIndex,
+        isValid: !isNaN(targetIndex)
+      });
+      
+      if (isNaN(targetIndex)) {
+        console.error(`❌ Invalid target index for ${target.id}, using array index ${index}`);
+      }
+      
+      // Use the array index as fallback if parsing fails
+      const finalTargetIndex = !isNaN(targetIndex) ? targetIndex : index;
       
       // Add multiple event listeners to catch different events
       target.addEventListener('targetFound', () => {
-        console.log(`🎆 TARGET FOUND EVENT triggered for ${target.id}`);
-        updateFound(target.id, targetIndex);
+        console.log(`🎆 TARGET FOUND EVENT triggered for ${target.id} (index: ${finalTargetIndex})`);
+        updateFound(target.id, finalTargetIndex);
       });
       
       target.addEventListener('targetLost', () => {
         console.log(`🔍 Target lost event for ${target.id}`);
       });
+      
+      // Add a test button to manually trigger detection for testing
+      if (index === 0) {
+        console.log('🧪 Adding manual test trigger for first target...');
+        setTimeout(() => {
+          console.log('🧪 You can manually test target detection by running:');
+          console.log(`testTarget('${target.id}', ${finalTargetIndex})`);
+          
+          // Make test function globally available
+          window.testTarget = (targetId, targetIdx) => {
+            console.log(`🧪 MANUAL TEST: Triggering target ${targetId} with index ${targetIdx}`);
+            updateFound(targetId, targetIdx);
+          };
+        }, 2000);
+      }
     });
     
     console.log('✅ Target setup completed. Total targets:', total);
@@ -742,10 +772,157 @@ const initializeApp = () => {
   // Also add event listeners for MindAR specific events
   sceneEl.addEventListener('arReady', () => {
     console.log('📷 AR READY EVENT - MindAR is initialized!');
+    // Set up target event listeners after AR is ready
+    setTimeout(() => {
+      console.log('🔄 Setting up target event listeners after AR ready...');
+      const targetsAfterAR = sceneEl.querySelectorAll('[mindar-image-target]');
+      console.log('🎯 Targets after AR ready:', targetsAfterAR.length);
+      
+      targetsAfterAR.forEach((target, index) => {
+        // Use the index from the target ID instead of parsing attributes
+        const targetId = target.id;
+        const targetIndexMatch = targetId.match(/target-(\d+)/);
+        const finalTargetIndex = targetIndexMatch ? parseInt(targetIndexMatch[1]) : index;
+        
+        // Check overlay plane visibility and properties
+        const overlayPlane = target.querySelector('a-plane');
+        const overlayMaterial = overlayPlane?.getAttribute('material');
+        
+        console.log(`🎯 Re-setting up target ${index}:`, {
+          id: target.id,
+          targetIndex: finalTargetIndex,
+          hasOverlayPlane: !!overlayPlane,
+          overlayVisible: overlayPlane?.getAttribute('visible'),
+          overlayMaterial: overlayMaterial,
+          overlayPosition: overlayPlane?.getAttribute('position'),
+          overlayScale: overlayPlane?.getAttribute('scale'),
+          targetVisible: target.getAttribute('visible'),
+          overlayOpacity: overlayPlane?.getAttribute('opacity')
+        });
+        
+        // Force the overlay to be visible and properly configured
+        if (overlayPlane) {
+          overlayPlane.setAttribute('visible', true);
+          overlayPlane.setAttribute('opacity', 1);
+          
+          // Try different positioning approaches based on target
+          if (targetId === 'target-0') {
+            // target-0 has special positioning, keep it as is
+            console.log('🔧 Keeping special positioning for target-0');
+          } else {
+            // For other targets, try more visible positioning
+            overlayPlane.setAttribute('position', '0 0 0.1');
+            overlayPlane.setAttribute('rotation', '0 0 0');
+            overlayPlane.setAttribute('scale', '2 2 2');
+            console.log('🔧 Adjusted positioning for', targetId);
+          }
+          
+          console.log('🔧 Forced overlay visibility for', targetId);
+          
+          // Add a simple test plane to verify rendering
+          if (targetId === 'target-4') {
+            const testPlane = document.createElement('a-plane');
+            testPlane.setAttribute('position', '0 0 0.2');
+            testPlane.setAttribute('width', '0.5');
+            testPlane.setAttribute('height', '0.5');
+            testPlane.setAttribute('color', 'red');
+            testPlane.setAttribute('visible', true);
+            testPlane.setAttribute('opacity', 0.8);
+            target.appendChild(testPlane);
+            console.log('🔴 Added red test plane to', targetId);
+          }
+        }
+        
+        // Remove any existing listeners first
+        target.removeEventListener('targetFound', target._targetFoundHandler);
+        target.removeEventListener('targetLost', target._targetLostHandler);
+        
+        // Create and store handlers
+        target._targetFoundHandler = () => {
+          console.log(`🎆 TARGET FOUND EVENT (after AR ready) for ${target.id} (index: ${finalTargetIndex})`);
+          
+          // Make sure overlay is visible when target is found
+          const overlayPlane = target.querySelector('a-plane');
+          if (overlayPlane) {
+            overlayPlane.setAttribute('visible', true);
+            console.log('🖼️ Overlay plane made visible for', target.id);
+          }
+          
+          updateFound(target.id, finalTargetIndex);
+        };
+        
+        target._targetLostHandler = () => {
+          console.log(`🔍 Target lost event (after AR ready) for ${target.id}`);
+        };
+        
+        // Add the event listeners
+        target.addEventListener('targetFound', target._targetFoundHandler);
+        target.addEventListener('targetLost', target._targetLostHandler);
+      });
+      
+      // Verify assets are loaded
+      const assets = sceneEl.querySelector('a-assets');
+      if (assets) {
+        const images = assets.querySelectorAll('img');
+        console.log('🖼️ Asset images found:', images.length);
+        images.forEach((img, idx) => {
+          console.log(`🖼️ Asset ${idx}:`, {
+            id: img.id,
+            src: img.src,
+            complete: img.complete,
+            naturalWidth: img.naturalWidth
+          });
+        });
+      }
+      
+      console.log('✅ Target event listeners set up after AR ready');
+    }, 1000);
   });
   
   sceneEl.addEventListener('arError', (event) => {
     console.error('❌ AR ERROR EVENT:', event.detail);
+  });
+  
+  // Add global event listener to catch any targetFound events as backup
+  sceneEl.addEventListener('targetFound', (event) => {
+    console.log('🎆 GLOBAL TARGET FOUND EVENT:', event.target.id, event.detail);
+    
+    // Extract target index from the element ID or attribute as backup
+    const targetId = event.target.id;
+    const targetIndexFromId = targetId.match(/target-(\d+)/)?.[1];
+    const targetIndexFromAttr = event.target.getAttribute('mindar-image-target');
+    
+    let targetIndex;
+    if (targetIndexFromId !== undefined) {
+      targetIndex = parseInt(targetIndexFromId);
+    } else if (targetIndexFromAttr) {
+      targetIndex = parseInt(targetIndexFromAttr.split('targetIndex:')[1]?.trim());
+    }
+    
+    if (targetIndex !== undefined && !isNaN(targetIndex)) {
+      console.log(`🎆 BACKUP: Calling updateFound for ${targetId} with index ${targetIndex}`);
+      
+      // Also try to make overlay visible from global handler
+      const overlayPlane = event.target.querySelector('a-plane');
+      if (overlayPlane) {
+        overlayPlane.setAttribute('visible', true);
+        console.log('🖼️ BACKUP: Overlay plane made visible for', targetId);
+        
+        // Double-check material is loaded
+        const material = overlayPlane.getAttribute('material');
+        console.log('🖼️ BACKUP: Overlay material:', material);
+      } else {
+        console.warn('⚠️ BACKUP: No overlay plane found in', targetId);
+      }
+      
+      updateFound(targetId, targetIndex);
+    } else {
+      console.error('❌ Could not determine target index for global event');
+    }
+  });
+  
+  sceneEl.addEventListener('targetLost', (event) => {
+    console.log('🔍 GLOBAL TARGET LOST EVENT:', event.target.id, event.detail);
   });
 };
 
