@@ -114,17 +114,17 @@ document.addEventListener('DOMContentLoaded', () => {
     fireworks.innerHTML = '';
     fireworks.classList.remove('hidden');
 
-    // Colors for multi-colored fireworks
-    const colors = [
-      ['#ff6b35', '#f7931e', '#ffc107'], // Orange/Yellow
-      ['#e91e63', '#f06292', '#ffb3d1'], // Pink/Magenta
-      ['#2196f3', '#64b5f6', '#bbdefb'], // Blue
-      ['#4caf50', '#81c784', '#c8e6c9'], // Green
-      ['#9c27b0', '#ba68c8', '#e1bee7'], // Purple
-      ['#ff5722', '#ff8a65', '#ffccbc'], // Red/Orange
-      ['#00bcd4', '#4dd0e1', '#b2ebf2'], // Cyan
-      ['#ffeb3b', '#fff176', '#fff9c4']  // Yellow
-    ];
+     // Colors for multi-colored fireworks
+     const fireworksColors = [
+       ['#ff6b35', '#f7931e', '#ffc107'], // Orange/Yellow
+       ['#e91e63', '#f06292', '#ffb3d1'], // Pink/Magenta
+       ['#2196f3', '#64b5f6', '#bbdefb'], // Blue
+       ['#4caf50', '#81c784', '#c8e6c9'], // Green
+       ['#9c27b0', '#ba68c8', '#e1bee7'], // Purple
+       ['#ff5722', '#ff8a65', '#ffccbc'], // Red/Orange
+       ['#00bcd4', '#4dd0e1', '#b2ebf2'], // Cyan
+       ['#ffeb3b', '#fff176', '#fff9c4']  // Yellow
+     ];
 
     // Create center explosion point
     const centerX = window.innerWidth / 2;
@@ -135,8 +135,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const particle = document.createElement('div');
       particle.className = 'firework-particle';
       
-      // Random color from palette
-      const colorSet = colors[Math.floor(Math.random() * colors.length)];
+       // Random color from palette
+       const colorSet = fireworksColors[Math.floor(Math.random() * fireworksColors.length)];
       const gradient = `radial-gradient(circle, ${colorSet[0]}, ${colorSet[1]}, ${colorSet[2]})`;
       particle.style.background = gradient;
       particle.style.boxShadow = `0 0 8px ${colorSet[1]}`;
