@@ -107,8 +107,8 @@ const initializeAdmin = () => {
         <td>${player.bestCompletionTime ? formatTime(player.bestCompletionTime) : 'N/A'}</td>
         <td>${new Date(player.lastPlayed).toLocaleDateString()}</td>
         <td>
-          <button class="btn small edit-btn" data-id="${player.id}">Edit</button>
-          <button class="btn small delete-btn" data-id="${player.id}">Delete</button>
+          <button class="btn small edit-btn" data-id="${player.id}" title="Edit">✏️</button>
+          <button class="btn small delete-btn" data-id="${player.id}" title="Delete">🗑️</button>
         </td>
       `;
       console.log(`Added row for player: ${player.playerName} with buttons`);
