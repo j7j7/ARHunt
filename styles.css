@@ -314,8 +314,6 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
 #playersList th:nth-child(4), #playersList td:nth-child(4) { width: 10%; } /* Targets */
 #playersList th:nth-child(5), #playersList td:nth-child(5) { width: 15%; } /* Best Time */
 #playersList th:nth-child(6), #playersList td:nth-child(6) { width: 20%; } /* Last Play */
-#playersList th:nth-child(7) { display: none; } /* Hide Actions header */
-#playersList td:nth-child(7) { width: 20%; } /* Actions */
 
 #playersList th, #playersList td {
   padding: 12px 8px;

@@ -106,40 +106,20 @@ const initializeAdmin = () => {
         <td>${player.totalTargetsFound || 0}</td>
         <td>${player.bestCompletionTime ? formatTime(player.bestCompletionTime) : 'N/A'}</td>
         <td>${new Date(player.lastPlayed).toLocaleDateString()}</td>
-        <td>
-          <button class="btn small edit-btn" data-id="${player.id}" title="Edit">✏️</button>
-          <button class="btn small delete-btn" data-id="${player.id}" title="Delete">🗑️</button>
-        </td>
       `;
+      row.dataset.playerId = player.id;
+      row.style.cursor = 'pointer';
+      row.addEventListener('click', (e) => {
+        if (!e.target.closest('button')) { // Don't trigger on button clicks
+          openEditModal(player.id, playersData);
+        }
+      });
       console.log(`Added row for player: ${player.playerName} with buttons`);
     });
     addButtonListeners(players);
   };
 
-  const addButtonListeners = (players) => {
-    // Add event listeners for edit and delete buttons
-    const editButtons = document.querySelectorAll('.edit-btn');
-    const deleteButtons = document.querySelectorAll('.delete-btn');
-    console.log(`Found ${editButtons.length} edit buttons and ${deleteButtons.length} delete buttons`);
 
-    editButtons.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const playerId = e.target.getAttribute('data-id');
-        console.log(`Edit button clicked for player ID: ${playerId}`);
-        openEditModal(playerId, players);
-      });
-    });
-
-    deleteButtons.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const playerId = e.target.getAttribute('data-id');
-        console.log(`Delete button clicked for player ID: ${playerId}`);
-        if (confirm('Are you sure you want to delete this player? This action cannot be undone.')) {
-          deletePlayer(playerId);
-        }
-      });
-    });
-  };
 
   // DOM elements
   const playersBody = document.getElementById('playersBody');
@@ -162,7 +142,7 @@ const initializeAdmin = () => {
 
       if (playersData.length === 0) {
         const row = playersBody.insertRow();
-        row.innerHTML = '<td colspan="7">No players found.</td>';
+        row.innerHTML = '<td colspan="6">No players found.</td>';
         return;
       }
 
@@ -260,6 +240,15 @@ const initializeAdmin = () => {
   editForm.addEventListener('submit', savePlayer);
   closeModal.addEventListener('click', closeEditModal);
   cancelEdit.addEventListener('click', closeEditModal);
+
+  // Delete button in modal
+  const deletePlayerBtn = document.getElementById('deletePlayer');
+  deletePlayerBtn.addEventListener('click', () => {
+    if (currentEditId && confirm('Are you sure you want to delete this player? This action cannot be undone.')) {
+      deletePlayer(currentEditId);
+      closeEditModal();
+    }
+  });
 
   // Close modal when clicking outside
   window.addEventListener('click', (e) => {
