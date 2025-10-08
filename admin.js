@@ -52,25 +52,30 @@ const initializeAdmin = () => {
   let lastNotificationTime = Date.now();
 
   const addNotification = (playerName, targetIndex, sequenceNumber) => {
+    console.log('addNotification called for:', playerName, targetIndex);
     const itemNumber = sequenceNumber || (targetIndex + 1);
     const message = `Player: ${playerName} found item ${itemNumber}/8!`;
     const notification = document.createElement('div');
     notification.className = 'notification';
     notification.innerText = message;
     const container = document.querySelector('#notifications');
-    container.insertBefore(notification, container.firstChild);
-    while (container.children.length > 5) {
-      container.removeChild(container.lastChild);
-    }
-    setTimeout(() => notification.classList.add('show'), 10);
-    setTimeout(() => {
-      notification.classList.remove('show');
+    if (container) {
+      container.insertBefore(notification, container.firstChild);
+      while (container.children.length > 5) {
+        container.removeChild(container.lastChild);
+      }
+      setTimeout(() => notification.classList.add('show'), 10);
       setTimeout(() => {
-        if (notification.parentNode) {
-          notification.parentNode.removeChild(notification);
-        }
-      }, 300);
-    }, 2000);
+        notification.classList.remove('show');
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }, 2000);
+    } else {
+      console.error('Notifications container not found');
+    }
   };
 
   // DOM elements
@@ -217,13 +222,16 @@ const initializeAdmin = () => {
 
   // Subscribe to discoveries for notifications
   db.subscribeQuery({ discoveries: {} }, (resp) => {
+    console.log('Subscription callback triggered:', resp);
     if (resp.data) {
-      const discoveries = resp.data.discoveries;
+      const discoveries = resp.data.discoveries || [];
+      console.log('Discoveries received:', discoveries.length);
       const newDiscoveries = discoveries.filter(d =>
-        new Date(d.foundAt).getTime() > lastNotificationTime &&
-        d.targetIndex !== -1 // Only item discoveries, not victories
+        new Date(d.foundAt).getTime() > lastNotificationTime
       );
+      console.log('New discoveries:', newDiscoveries.length);
       newDiscoveries.forEach(d => {
+        console.log('Adding notification for:', d.playerName, d.targetIndex);
         addNotification(d.playerName, d.targetIndex, d.sequenceNumber);
       });
       if (newDiscoveries.length > 0) {
