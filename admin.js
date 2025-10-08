@@ -51,10 +51,17 @@ const initializeAdmin = () => {
   let currentEditId = null;
   let lastNotificationTime = Date.now();
 
-  const addNotification = (playerName, targetIndex, sequenceNumber) => {
-    console.log('addNotification called for:', playerName, targetIndex);
-    const itemNumber = sequenceNumber || (targetIndex + 1);
-    const message = `Player: ${playerName} found item ${itemNumber}/8!`;
+  const addNotification = (playerName, targetIndex, sequenceNumber, timeSinceStart = null) => {
+    console.log('addNotification called for:', playerName, targetIndex, timeSinceStart);
+    let message;
+    if (targetIndex === -1 && sequenceNumber === -1) {
+      // Victory notification
+      const timeStr = formatTime(timeSinceStart);
+      message = `Player: ${playerName} found all items in ${timeStr}!`;
+    } else {
+      const itemNumber = sequenceNumber || (targetIndex + 1);
+      message = `Player: ${playerName} found item ${itemNumber}/8!`;
+    }
     const notification = document.createElement('div');
     notification.className = 'notification';
     notification.innerText = message;
@@ -76,6 +83,12 @@ const initializeAdmin = () => {
     } else {
       console.error('Notifications container not found');
     }
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   // DOM elements
@@ -231,8 +244,8 @@ const initializeAdmin = () => {
       );
       console.log('New discoveries:', newDiscoveries.length);
       newDiscoveries.forEach(d => {
-        console.log('Adding notification for:', d.playerName, d.targetIndex);
-        addNotification(d.playerName, d.targetIndex, d.sequenceNumber);
+        console.log('Adding notification for:', d.playerName, d.targetIndex, d.timeSinceStart);
+        addNotification(d.playerName, d.targetIndex, d.sequenceNumber, d.timeSinceStart);
       });
       if (newDiscoveries.length > 0) {
         lastNotificationTime = Math.max(...newDiscoveries.map(d => new Date(d.foundAt).getTime()));
@@ -243,11 +256,16 @@ const initializeAdmin = () => {
   // Initial load
   loadPlayers();
 
-  // Test notification after 1 second
+  // Test notifications after 1 second
   setTimeout(() => {
-    console.log('Testing notification');
+    console.log('Testing item notification');
     addNotification('TestPlayer', 0, 1);
   }, 1000);
+
+  setTimeout(() => {
+    console.log('Testing victory notification');
+    addNotification('TestPlayer', -1, -1, 125); // 2:05
+  }, 3000);
 };
 
 // Wait for DOM and InstantDB to be ready
