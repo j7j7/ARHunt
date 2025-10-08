@@ -95,6 +95,10 @@ const initializeAdmin = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const addButtonListeners = (players) => {
+    // No buttons to add listeners to since we're using row clicks
+  };
+
   const populateTable = (players) => {
     playersBody.innerHTML = '';
     players.forEach(player => {
@@ -113,9 +117,8 @@ const initializeAdmin = () => {
         console.log('Row clicked for player:', player.playerName, player.id);
         openEditModal(player.id, playersData);
       });
-      console.log(`Added row for player: ${player.playerName} with buttons`);
     });
-    addButtonListeners(players);
+    addButtonListeners(players); // Call to satisfy any references
   };
 
 
