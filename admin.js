@@ -50,6 +50,8 @@ const initializeAdmin = () => {
 
   let currentEditId = null;
   let lastNotificationTime = Date.now();
+  let playersData = []; // Store original player data for sorting
+  let currentSort = { column: null, direction: 'asc' };
 
   const addNotification = (playerName, targetIndex, sequenceNumber, timeSinceStart = null) => {
     console.log('addNotification called for:', playerName, targetIndex, timeSinceStart);
@@ -93,6 +95,52 @@ const initializeAdmin = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const populateTable = (players) => {
+    playersBody.innerHTML = '';
+    players.forEach(player => {
+      const row = playersBody.insertRow();
+      row.innerHTML = `
+        <td>${player.playerName}</td>
+        <td>${player.totalGamesPlayed || 0}</td>
+        <td>${player.totalGamesCompleted || 0}</td>
+        <td>${player.totalTargetsFound || 0}</td>
+        <td>${player.bestCompletionTime || 'N/A'}</td>
+        <td>${new Date(player.lastPlayed).toLocaleDateString()}</td>
+        <td>
+          <button class="btn small edit-btn" data-id="${player.id}">Edit</button>
+          <button class="btn small delete-btn" data-id="${player.id}">Delete</button>
+        </td>
+      `;
+      console.log(`Added row for player: ${player.playerName} with buttons`);
+    });
+    addButtonListeners(players);
+  };
+
+  const addButtonListeners = (players) => {
+    // Add event listeners for edit and delete buttons
+    const editButtons = document.querySelectorAll('.edit-btn');
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    console.log(`Found ${editButtons.length} edit buttons and ${deleteButtons.length} delete buttons`);
+
+    editButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const playerId = e.target.getAttribute('data-id');
+        console.log(`Edit button clicked for player ID: ${playerId}`);
+        openEditModal(playerId, players);
+      });
+    });
+
+    deleteButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const playerId = e.target.getAttribute('data-id');
+        console.log(`Delete button clicked for player ID: ${playerId}`);
+        if (confirm('Are you sure you want to delete this player? This action cannot be undone.')) {
+          deletePlayer(playerId);
+        }
+      });
+    });
+  };
+
   // DOM elements
   const playersBody = document.getElementById('playersBody');
   const refreshBtn = document.getElementById('refreshBtn');
@@ -106,35 +154,20 @@ const initializeAdmin = () => {
     try {
       console.log('Loading players...');
       const result = await db.queryOnce({ playerStats: {} });
-      const players = result?.data?.playerStats || result?.playerStats || [];
-      console.log('Players loaded:', players);
-      
+      playersData = result?.data?.playerStats || result?.playerStats || [];
+      console.log('Players loaded:', playersData);
+
       // Clear existing rows
       playersBody.innerHTML = '';
-      
-      if (players.length === 0) {
+
+      if (playersData.length === 0) {
         const row = playersBody.insertRow();
         row.innerHTML = '<td colspan="7">No players found.</td>';
         return;
       }
-      
+
       // Populate table
-      players.forEach(player => {
-        const row = playersBody.insertRow();
-        row.innerHTML = `
-          <td>${player.playerName}</td>
-          <td>${player.totalGamesPlayed || 0}</td>
-          <td>${player.totalGamesCompleted || 0}</td>
-          <td>${player.totalTargetsFound || 0}</td>
-          <td>${player.bestCompletionTime || 'N/A'}</td>
-          <td>${new Date(player.lastPlayed).toLocaleDateString()}</td>
-          <td>
-            <button class="btn small edit-btn" data-id="${player.id}">Edit</button>
-            <button class="btn small delete-btn" data-id="${player.id}">Delete</button>
-          </td>
-        `;
-        console.log(`Added row for player: ${player.playerName} with buttons`);
-      });
+      populateTable(playersData);
       
       // Add event listeners for edit and delete buttons
       const editButtons = document.querySelectorAll('.edit-btn');
@@ -232,6 +265,70 @@ const initializeAdmin = () => {
   window.addEventListener('click', (e) => {
     if (e.target === editModal) {
       closeEditModal();
+    }
+  });
+
+  const sortTable = (columnIndex, direction) => {
+    const sortedPlayers = [...playersData].sort((a, b) => {
+      let aVal, bVal, result;
+      switch (columnIndex) {
+        case 0: // Player
+          aVal = a.playerName;
+          bVal = b.playerName;
+          result = aVal.localeCompare(bVal);
+          break;
+        case 1: // Games
+          aVal = a.totalGamesPlayed || 0;
+          bVal = b.totalGamesPlayed || 0;
+          result = aVal - bVal;
+          break;
+        case 2: // Completed
+          aVal = a.totalGamesCompleted || 0;
+          bVal = b.totalGamesCompleted || 0;
+          result = aVal - bVal;
+          break;
+        case 3: // Targets
+          aVal = a.totalTargetsFound || 0;
+          bVal = b.totalTargetsFound || 0;
+          result = aVal - bVal;
+          break;
+        case 4: // Best Time
+          aVal = a.bestCompletionTime || Infinity;
+          bVal = b.bestCompletionTime || Infinity;
+          result = aVal - bVal;
+          break;
+        case 5: // Last Play
+          aVal = new Date(a.lastPlayed);
+          bVal = new Date(b.lastPlayed);
+          result = aVal - bVal;
+          break;
+        default:
+          result = 0;
+      }
+      return direction === 'desc' ? -result : result;
+    });
+    populateTable(sortedPlayers);
+  };
+
+  // Add sort functionality to table headers
+  document.querySelectorAll('#playersList th').forEach((th, index) => {
+    if (index < 6) { // Only sortable columns
+      th.style.cursor = 'pointer';
+      th.style.userSelect = 'none';
+      th.addEventListener('click', () => {
+        if (currentSort.column === index) {
+          currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+          currentSort.column = index;
+          currentSort.direction = 'asc';
+        }
+        sortTable(index, currentSort.direction);
+        // Update sort indicators
+        document.querySelectorAll('#playersList th').forEach(t => {
+          t.textContent = t.textContent.replace(/ [↑↓]$/, '');
+        });
+        th.textContent += currentSort.direction === 'asc' ? ' ↑' : ' ↓';
+      });
     }
   });
 
