@@ -140,6 +140,15 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
   color: var(--muted);
 }
 
+/* Credits text */
+.credits {
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+  font-style: italic;
+}
+
 /* Ensure input container has proper pointer events */
 .overlay .panel label,
 .overlay .panel input {
