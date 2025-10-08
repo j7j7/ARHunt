@@ -305,13 +305,29 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
   border-collapse: collapse;
   background: rgba(15, 23, 42, 0.8);
   border-radius: 8px;
+  table-layout: fixed;
 }
+
+#playersList th:nth-child(1), #playersList td:nth-child(1) { width: 25%; } /* Player */
+#playersList th:nth-child(2), #playersList td:nth-child(2) { width: 10%; } /* Games */
+#playersList th:nth-child(3), #playersList td:nth-child(3) { width: 10%; } /* Completed */
+#playersList th:nth-child(4), #playersList td:nth-child(4) { width: 10%; } /* Targets */
+#playersList th:nth-child(5), #playersList td:nth-child(5) { width: 15%; } /* Best Time */
+#playersList th:nth-child(6), #playersList td:nth-child(6) { width: 15%; } /* Last Play */
+#playersList th:nth-child(7), #playersList td:nth-child(7) { width: 15%; } /* Actions */
 
 #playersList th, #playersList td {
   padding: 12px 8px;
   text-align: left;
   border-bottom: 1px solid rgba(255,255,255,0.1);
   white-space: nowrap;
+}
+
+#playersList th:nth-child(2), #playersList td:nth-child(2),
+#playersList th:nth-child(3), #playersList td:nth-child(3),
+#playersList th:nth-child(4), #playersList td:nth-child(4) {
+  padding: 12px 4px;
+  text-align: center;
 }
 
 #playersList th {
