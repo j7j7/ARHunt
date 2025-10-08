@@ -104,7 +104,7 @@ const initializeAdmin = () => {
         <td>${player.totalGamesPlayed || 0}</td>
         <td>${player.totalGamesCompleted || 0}</td>
         <td>${player.totalTargetsFound || 0}</td>
-        <td>${player.bestCompletionTime || 'N/A'}</td>
+        <td>${player.bestCompletionTime ? formatTime(player.bestCompletionTime) : 'N/A'}</td>
         <td>${new Date(player.lastPlayed).toLocaleDateString()}</td>
         <td>
           <button class="btn small edit-btn" data-id="${player.id}">Edit</button>
