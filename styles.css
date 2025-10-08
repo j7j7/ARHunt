@@ -308,14 +308,13 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
   table-layout: fixed;
 }
 
-#playersList th:nth-child(1), #playersList td:nth-child(1) { width: 20%; } /* Player */
+#playersList th:nth-child(1), #playersList td:nth-child(1) { width: 25%; } /* Player */
 #playersList th:nth-child(2), #playersList td:nth-child(2) { width: 10%; } /* Games */
 #playersList th:nth-child(3), #playersList td:nth-child(3) { width: 10%; } /* Completed */
 #playersList th:nth-child(4), #playersList td:nth-child(4) { width: 10%; } /* Targets */
-#playersList th:nth-child(5), #playersList td:nth-child(5) { width: 12%; } /* Best Time */
-#playersList th:nth-child(6), #playersList td:nth-child(6) { width: 13%; } /* Last Completion */
-#playersList th:nth-child(7), #playersList td:nth-child(7) { width: 13%; } /* Last Play */
-#playersList th:nth-child(8), #playersList td:nth-child(8) { width: 12%; } /* Actions */
+#playersList th:nth-child(5), #playersList td:nth-child(5) { width: 15%; } /* Best Time */
+#playersList th:nth-child(6), #playersList td:nth-child(6) { width: 15%; } /* Last Play */
+#playersList th:nth-child(7), #playersList td:nth-child(7) { width: 15%; } /* Actions */
 
 #playersList th, #playersList td {
   padding: 12px 8px;

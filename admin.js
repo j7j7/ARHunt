@@ -105,7 +105,6 @@ const initializeAdmin = () => {
         <td>${player.totalGamesCompleted || 0}</td>
         <td>${player.totalTargetsFound || 0}</td>
         <td>${player.bestCompletionTime ? formatTime(player.bestCompletionTime) : 'N/A'}</td>
-        <td>${player.lastCompletion ? new Date(player.lastCompletion).toLocaleDateString() : 'N/A'}</td>
         <td>${new Date(player.lastPlayed).toLocaleDateString()}</td>
         <td>
           <button class="btn small edit-btn" data-id="${player.id}">Edit</button>
@@ -154,19 +153,8 @@ const initializeAdmin = () => {
   const loadPlayers = async () => {
     try {
       console.log('Loading players...');
-      const statsResult = await db.queryOnce({ playerStats: {} });
-      const completionsResult = await db.queryOnce({ gameCompletions: {} });
-      const players = statsResult?.data?.playerStats || statsResult?.playerStats || [];
-      const completions = completionsResult?.data?.gameCompletions || completionsResult?.gameCompletions || [];
-
-      // Add lastCompletion to each player
-      playersData = players.map(player => {
-        const playerCompletions = completions.filter(c => c.playerName === player.playerName);
-        const lastCompletion = playerCompletions.length > 0
-          ? Math.max(...playerCompletions.map(c => new Date(c.completionTime).getTime()))
-          : null;
-        return { ...player, lastCompletion };
-      });
+      const result = await db.queryOnce({ playerStats: {} });
+      playersData = result?.data?.playerStats || result?.playerStats || [];
       console.log('Players loaded:', playersData);
 
       // Clear existing rows
@@ -174,7 +162,7 @@ const initializeAdmin = () => {
 
       if (playersData.length === 0) {
         const row = playersBody.insertRow();
-        row.innerHTML = '<td colspan="8">No players found.</td>';
+        row.innerHTML = '<td colspan="7">No players found.</td>';
         return;
       }
 
@@ -309,12 +297,7 @@ const initializeAdmin = () => {
           bVal = b.bestCompletionTime || Infinity;
           result = aVal - bVal;
           break;
-        case 5: // Last Completion
-          aVal = a.lastCompletion ? new Date(a.lastCompletion) : new Date(0);
-          bVal = b.lastCompletion ? new Date(b.lastCompletion) : new Date(0);
-          result = aVal - bVal;
-          break;
-        case 6: // Last Play
+        case 5: // Last Play
           aVal = new Date(a.lastPlayed);
           bVal = new Date(b.lastPlayed);
           result = aVal - bVal;
@@ -329,7 +312,7 @@ const initializeAdmin = () => {
 
   // Add sort functionality to table headers
   document.querySelectorAll('#playersList th').forEach((th, index) => {
-    if (index < 7) { // Only sortable columns (exclude Actions)
+    if (index < 6) { // Only sortable columns (exclude Actions)
       th.style.cursor = 'pointer';
       th.style.userSelect = 'none';
       th.addEventListener('click', () => {
