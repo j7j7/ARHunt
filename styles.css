@@ -351,7 +351,7 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
 /* Modal Styles */
 .modal {
   position: fixed;
-  z-index: 10000;
+  z-index: 2147483648;
   left: 0;
   top: 0;
   width: 100%;
@@ -361,10 +361,6 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: none;
-}
-
-.modal.show {
   pointer-events: auto;
 }
 
@@ -377,6 +373,7 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
   max-width: 500px;
   position: relative;
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  z-index: 2147483649;
 }
 
 .close {
