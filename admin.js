@@ -90,19 +90,26 @@ const initializeAdmin = () => {
             <button class="btn small delete-btn" data-id="${player.id}">Delete</button>
           </td>
         `;
+        console.log(`Added row for player: ${player.playerName} with buttons`);
       });
       
       // Add event listeners for edit and delete buttons
-      document.querySelectorAll('.edit-btn').forEach(btn => {
+      const editButtons = document.querySelectorAll('.edit-btn');
+      const deleteButtons = document.querySelectorAll('.delete-btn');
+      console.log(`Found ${editButtons.length} edit buttons and ${deleteButtons.length} delete buttons`);
+      
+      editButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
           const playerId = e.target.getAttribute('data-id');
+          console.log(`Edit button clicked for player ID: ${playerId}`);
           openEditModal(playerId, players);
         });
       });
       
-      document.querySelectorAll('.delete-btn').forEach(btn => {
+      deleteButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
           const playerId = e.target.getAttribute('data-id');
+          console.log(`Delete button clicked for player ID: ${playerId}`);
           if (confirm('Are you sure you want to delete this player? This action cannot be undone.')) {
             deletePlayer(playerId);
           }

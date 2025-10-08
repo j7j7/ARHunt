@@ -36,17 +36,19 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
   pointer-events: auto; /* allow interaction with overlay content */
 }
 .overlay .panel {
-  pointer-events: auto;
-  background: rgba(15, 23, 42, 0.9);
-  border: 2px solid var(--brand);
-  border-radius: 12px;
-  padding: 18px 16px;
-  width: min(92vw, 420px);
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
+   pointer-events: auto;
+   background: rgba(15, 23, 42, 0.9);
+   border: 2px solid var(--brand);
+   border-radius: 12px;
+   padding: 18px 16px;
+   width: min(95vw, 800px);
+   max-height: 90vh;
+   overflow-y: auto;
+   text-align: center;
+   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+ }
 
-.hidden { display: none; }
+.hidden { display: none !important; }
 
 /* HUD top bar */
 #hud {
@@ -293,6 +295,7 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
   margin: 20px 0;
   max-height: 60vh;
   overflow-y: auto;
+  overflow-x: auto;
   border-radius: 8px;
   border: 1px solid rgba(255,255,255,0.15);
 }
@@ -305,9 +308,10 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
 }
 
 #playersList th, #playersList td {
-  padding: 12px;
+  padding: 12px 8px;
   text-align: left;
   border-bottom: 1px solid rgba(255,255,255,0.1);
+  white-space: nowrap;
 }
 
 #playersList th {
@@ -322,10 +326,16 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
   background: rgba(255, 111, 61, 0.1);
 }
 
+#playersList td:last-child {
+  text-align: center;
+  white-space: nowrap;
+}
+
 .btn.small {
   padding: 6px 12px;
   font-size: 14px;
-  margin-right: 5px;
+  margin: 2px;
+  display: inline-block;
 }
 
 .edit-btn {
@@ -351,6 +361,11 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
+}
+
+.modal.show {
+  pointer-events: auto;
 }
 
 .modal-content {
