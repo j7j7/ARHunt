@@ -242,6 +242,12 @@ const initializeAdmin = () => {
 
   // Initial load
   loadPlayers();
+
+  // Test notification after 1 second
+  setTimeout(() => {
+    console.log('Testing notification');
+    addNotification('TestPlayer', 0, 1);
+  }, 1000);
 };
 
 // Wait for DOM and InstantDB to be ready
