@@ -110,9 +110,8 @@ const initializeAdmin = () => {
       row.dataset.playerId = player.id;
       row.style.cursor = 'pointer';
       row.addEventListener('click', (e) => {
-        if (!e.target.closest('button')) { // Don't trigger on button clicks
-          openEditModal(player.id, playersData);
-        }
+        console.log('Row clicked for player:', player.playerName, player.id);
+        openEditModal(player.id, playersData);
       });
       console.log(`Added row for player: ${player.playerName} with buttons`);
     });
@@ -180,8 +179,12 @@ const initializeAdmin = () => {
 
   // Open edit modal
   const openEditModal = (playerId, players) => {
+    console.log('Opening edit modal for playerId:', playerId);
     const player = players.find(p => p.id === playerId);
-    if (!player) return;
+    if (!player) {
+      console.error('Player not found for id:', playerId);
+      return;
+    }
     
     currentEditId = playerId;
     document.getElementById('editPlayerName').value = player.playerName;
