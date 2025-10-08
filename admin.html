@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ARHunt Admin</title>
+  <link rel="stylesheet" href="./styles.css" />
+  
+  <!-- InstantDB via Skypack -->
+  <script type="module">
+    try {
+      console.log('Loading InstantDB from Skypack...');
+      import('https://cdn.skypack.dev/@instantdb/core@0.22.6')
+        .then(InstantDB => {
+          console.log('InstantDB loaded:', InstantDB);
+          window.InstantDB = InstantDB;
+          // Dispatch event when InstantDB is ready
+          window.dispatchEvent(new CustomEvent('instantdb-ready'));
+          console.log('InstantDB ready event dispatched');
+        })
+        .catch(error => {
+          console.error('Failed to load InstantDB:', error);
+        });
+    } catch (error) {
+      console.error('Error in InstantDB loading script:', error);
+    }
+  </script>
+</head>
+<body>
+  <div class="overlay">
+    <div class="panel">
+      <h1>ARHunt Admin</h1>
+      <p>Manage players and their game statistics.</p>
+      
+      <div id="playersTable" class="table-container">
+        <table id="playersList">
+          <thead>
+            <tr>
+              <th>Player Name</th>
+              <th>Total Games Played</th>
+              <th>Total Games Completed</th>
+              <th>Total Targets Found</th>
+              <th>Best Completion Time (s)</th>
+              <th>Last Played</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="playersBody">
+            <!-- Players will be populated here -->
+          </tbody>
+        </table>
+      </div>
+      
+      <button id="refreshBtn" class="btn primary">Refresh Data</button>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Edit Player</h2>
+      <form id="editForm">
+        <label for="editPlayerName">Player Name:</label>
+        <input type="text" id="editPlayerName" readonly>
+        
+        <label for="editTotalGamesPlayed">Total Games Played:</label>
+        <input type="number" id="editTotalGamesPlayed" min="0">
+        
+        <label for="editTotalGamesCompleted">Total Games Completed:</label>
+        <input type="number" id="editTotalGamesCompleted" min="0">
+        
+        <label for="editTotalTargetsFound">Total Targets Found:</label>
+        <input type="number" id="editTotalTargetsFound" min="0">
+        
+        <label for="editBestCompletionTime">Best Completion Time (s):</label>
+        <input type="number" id="editBestCompletionTime" min="0" step="0.01">
+        
+        <button type="submit" class="btn primary">Save Changes</button>
+        <button type="button" class="btn ghost" id="cancelEdit">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="./admin.js"></script>
+</body>
+</html>

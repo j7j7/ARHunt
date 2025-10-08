@@ -7,11 +7,23 @@
       "options": {
         "baseURL": "http://ub:11434/v1"
       },
-      "models": {
-        "llama3": {
-          "name": "Llama 3.2"
-        }
-      }
+       "models": {
+         "deepseek-r1": {
+           "name": "deepseek-r1"
+         },
+         "llama3.1": {
+           "name": "llama3.1"
+         },
+         "qwen3": {
+           "name": "qwen3"
+         },
+         "mistral": {
+           "name": "mistral"
+         },
+         "qwen2.5": {
+           "name": "qwen2.5"
+         }
+       }
     }
   }
 }
