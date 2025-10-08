@@ -139,6 +139,10 @@ const initializeAdmin = () => {
       playersData = result?.data?.playerStats || result?.playerStats || [];
       console.log('Players loaded:', playersData);
 
+      // Set default sort to last updated (lastPlayed descending)
+      currentSort = { column: 5, direction: 'desc' };
+      sortTable(5, 'desc');
+
       // Clear existing rows
       playersBody.innerHTML = '';
 
@@ -242,7 +246,9 @@ const initializeAdmin = () => {
   };
 
   // Event listeners
-  refreshBtn.addEventListener('click', loadPlayers);
+  refreshBtn.addEventListener('click', () => {
+    console.log('Real-time updates are active - no manual refresh needed');
+  });
   editForm.addEventListener('submit', savePlayer);
   closeModal.addEventListener('click', closeEditModal);
   cancelEdit.addEventListener('click', closeEditModal);
@@ -324,6 +330,28 @@ const initializeAdmin = () => {
         });
         th.textContent += currentSort.direction === 'asc' ? ' ↑' : ' ↓';
       });
+    }
+  });
+
+  // Subscribe to playerStats for real-time updates
+  db.subscribeQuery({ playerStats: {} }, (resp) => {
+    console.log('PlayerStats subscription triggered:', resp);
+    if (resp.data && resp.data.playerStats) {
+      const newPlayers = resp.data.playerStats;
+      console.log('PlayerStats received:', newPlayers.length);
+
+      // Intelligently merge new data with existing
+      playersData = playersData.map(existing => {
+        const updated = newPlayers.find(p => p.id === existing.id);
+        return updated ? { ...existing, ...updated } : existing;
+      }).concat(newPlayers.filter(p => !playersData.some(existing => existing.id === p.id)));
+
+      console.log('Updated playersData length:', playersData.length);
+
+      // Re-sort and re-render with current sort settings
+      const sortColumn = currentSort.column !== null ? currentSort.column : 5; // Default to lastPlayed
+      const sortDirection = currentSort.direction;
+      sortTable(sortColumn, sortDirection);
     }
   });
 
