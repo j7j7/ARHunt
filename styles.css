@@ -28,13 +28,13 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
 
 /* Overlays */
 .overlay {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  z-index: 2147483647; /* ensure overlays stay above AR canvas */
-  pointer-events: auto; /* allow interaction with overlay content */
-}
+   position: fixed;
+   inset: 0;
+   display: grid;
+   place-items: center;
+   z-index: 1000; /* ensure overlays stay above AR canvas */
+   pointer-events: auto; /* allow interaction with overlay content */
+ }
 .overlay .panel {
    pointer-events: auto;
    background: rgba(15, 23, 42, 0.9);
@@ -351,7 +351,7 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
 /* Modal Styles */
 .modal {
   position: fixed;
-  z-index: 2147483648;
+  z-index: 1001;
   left: 0;
   top: 0;
   width: 100%;
@@ -373,7 +373,7 @@ vetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";               /
   max-width: 500px;
   position: relative;
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-  z-index: 2147483649;
+  z-index: 1002;
 }
 
 .close {
