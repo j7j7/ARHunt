@@ -49,6 +49,29 @@ const initializeAdmin = () => {
   const db = init({ appId: '445c0fd0-115d-46b3-b421-c05f6d6e9f89', schema });
 
   let currentEditId = null;
+  let lastNotificationTime = Date.now();
+
+  const addNotification = (playerName, targetIndex, sequenceNumber) => {
+    const itemNumber = sequenceNumber || (targetIndex + 1);
+    const message = `Player: ${playerName} found item ${itemNumber}/8!`;
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.innerText = message;
+    const container = document.querySelector('#notifications');
+    container.insertBefore(notification, container.firstChild);
+    while (container.children.length > 5) {
+      container.removeChild(container.lastChild);
+    }
+    setTimeout(() => notification.classList.add('show'), 10);
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 300);
+    }, 2000);
+  };
 
   // DOM elements
   const playersBody = document.getElementById('playersBody');
@@ -189,6 +212,23 @@ const initializeAdmin = () => {
   window.addEventListener('click', (e) => {
     if (e.target === editModal) {
       closeEditModal();
+    }
+  });
+
+  // Subscribe to discoveries for notifications
+  db.subscribeQuery({ discoveries: {} }, (resp) => {
+    if (resp.data) {
+      const discoveries = resp.data.discoveries;
+      const newDiscoveries = discoveries.filter(d =>
+        new Date(d.foundAt).getTime() > lastNotificationTime &&
+        d.targetIndex !== -1 // Only item discoveries, not victories
+      );
+      newDiscoveries.forEach(d => {
+        addNotification(d.playerName, d.targetIndex, d.sequenceNumber);
+      });
+      if (newDiscoveries.length > 0) {
+        lastNotificationTime = Math.max(...newDiscoveries.map(d => new Date(d.foundAt).getTime()));
+      }
     }
   });
 
