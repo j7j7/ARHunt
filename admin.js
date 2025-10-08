@@ -245,10 +245,68 @@ const initializeAdmin = () => {
     }
   };
 
+  // Clear all players function
+  const clearAllPlayers = async () => {
+    try {
+      console.log('Clearing all players...');
+      const result = await db.queryOnce({ playerStats: {} });
+      const players = result?.data?.playerStats || result?.playerStats || [];
+
+      if (players.length === 0) {
+        alert('No players to clear.');
+        return;
+      }
+
+      for (const player of players) {
+        await db.transact(db.tx.playerStats[player.id].delete());
+      }
+
+      console.log('All players cleared successfully');
+      // Real-time subscription will handle the UI update
+    } catch (error) {
+      console.error('Error clearing players:', error);
+      alert('Error clearing players. Check console for details.');
+    }
+  };
+
   // Event listeners
   refreshBtn.addEventListener('click', () => {
     console.log('Real-time updates are active - no manual refresh needed');
   });
+
+  // Clear button
+  const clearBtn = document.getElementById('clearBtn');
+  const clearModal = document.getElementById('clearModal');
+  const clearForm = document.getElementById('clearForm');
+  const cancelClear = document.getElementById('cancelClear');
+  const closeClearModal = clearModal.querySelector('.close');
+
+  clearBtn.addEventListener('click', () => {
+    clearModal.classList.remove('hidden');
+  });
+
+  clearForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const password = document.getElementById('clearPassword').value;
+    if (password === 'JVK!') {
+      clearAllPlayers();
+      clearModal.classList.add('hidden');
+      document.getElementById('clearPassword').value = ''; // Clear the input
+    } else {
+      alert('Incorrect password!');
+    }
+  });
+
+  closeClearModal.addEventListener('click', () => {
+    clearModal.classList.add('hidden');
+    document.getElementById('clearPassword').value = '';
+  });
+
+  cancelClear.addEventListener('click', () => {
+    clearModal.classList.add('hidden');
+    document.getElementById('clearPassword').value = '';
+  });
+
   editForm.addEventListener('submit', savePlayer);
   closeModal.addEventListener('click', closeEditModal);
   cancelEdit.addEventListener('click', closeEditModal);
