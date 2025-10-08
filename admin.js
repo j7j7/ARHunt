@@ -54,7 +54,8 @@ const initializeAdmin = () => {
   const addNotification = (playerName, targetIndex, sequenceNumber, timeSinceStart = null) => {
     console.log('addNotification called for:', playerName, targetIndex, timeSinceStart);
     let message;
-    if (targetIndex === -1 && sequenceNumber === -1) {
+    const isVictory = (targetIndex === -1 && sequenceNumber === -1);
+    if (isVictory) {
       // Victory notification
       const timeStr = formatTime(timeSinceStart);
       message = `Player: ${playerName} found all items in ${timeStr}!`;
@@ -62,6 +63,7 @@ const initializeAdmin = () => {
       const itemNumber = sequenceNumber || (targetIndex + 1);
       message = `Player: ${playerName} found item ${itemNumber}/8!`;
     }
+    const duration = isVictory ? 10000 : 2000; // 10 seconds for victory, 2 for items
     const notification = document.createElement('div');
     notification.className = 'notification';
     notification.innerText = message;
@@ -79,7 +81,7 @@ const initializeAdmin = () => {
             notification.parentNode.removeChild(notification);
           }
         }, 300);
-      }, 2000);
+      }, duration);
     } else {
       console.error('Notifications container not found');
     }
