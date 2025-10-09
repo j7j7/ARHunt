@@ -125,14 +125,14 @@ const initializeApp = () => {
    let gameActive = false; // Flag to control whether targets should respond
 
    const descriptions = [
-     "Lakshmi Puja with family", // DA1.jpg, target-0
-     "Rama's divine procession", // DA2.jpg, target-1
-     "Sikh procession from fort", // DA3.jpg, target-2
-     "Village celebration scene", // DA4.jpg, target-3
-     "Temple with fireworks", // DA5.jpg, target-4
-     "Vishnu battling demon", // DA6.jpg, target-5
-     "Traditional multi-tiered brass lamp (Kuthuvilakku)", // DA7.jpg, target-6
-     "Rama vs. Ravana battle" // DA8.jpg, target-7
+     "Goddess Lakshmi Puja", // DA1.jpg, target-0
+     "Lord Rama, Sita, and Lakshmana returning to Ayodhya", // DA2.jpg, target-1
+     "Guru Hargobind's release", // DA3.jpg, target-2
+     "People lighting Diyas", // DA4.jpg, target-3
+     "A vibrant Ayodhya", // DA5.jpg, target-4
+     "Lord Krishna defeating Narakasura", // DA6.jpg, target-5
+     "Diya holders", // DA7.jpg, target-6
+     "Battle between Rama and Ravana" // DA8.jpg, target-7
    ];
 
    // Session and player stats management
